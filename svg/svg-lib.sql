@@ -52,9 +52,10 @@ LANGUAGE 'plpgsql' IMMUTABLE STRICT;
 
 CREATE OR REPLACE FUNCTION svgPath(
   geom geometry,
-  class TEXT DEFAULT '',
-  id TEXT DEFAULT '',
-  style TEXT DEFAULT ''
+  class text DEFAULT '',
+  id text DEFAULT '',
+  style text DEFAULT '',
+  attr text DEFAULT ''
 )
 RETURNS TEXT AS 
 $$
@@ -94,7 +95,7 @@ BEGIN
   svg_geom := ' d="' || svg_geom || '" ';
  END IF; 
 
- return ( '<path' || classAttr || idAttr || styleAttr || fillrule || ' ' || svg_geom || ' />' )::text;
+ return ( '<path' || classAttr || idAttr || styleAttr || fillrule || || attr || ' ' || svg_geom || ' />' )::text;
 END; 
 $$ 
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
