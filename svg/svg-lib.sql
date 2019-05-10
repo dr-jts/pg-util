@@ -95,7 +95,7 @@ BEGIN
   svg_geom := ' d="' || svg_geom || '" ';
  END IF; 
 
- return ( '<path' || classAttr || idAttr || styleAttr || fillrule || || attr || ' ' || svg_geom || ' />' )::text;
+ return ( '<path' || classAttr || idAttr || styleAttr || fillrule || attr || ' ' || svg_geom || ' />' )::text;
 END; 
 $$ 
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
