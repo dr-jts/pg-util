@@ -10,4 +10,14 @@ WHERE routines.specific_schema='public'
 AND routines.routine_name LIKE 'svg%'
 ORDER BY routines.routine_name, parameters.ordinal_position;
 ```
+Or in psql:
+```
+\df [ pattern ]
+```
+
+### Drop function
+```
+DROP FUNCTION name(args, ...);
+```
+
 
