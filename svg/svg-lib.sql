@@ -1,8 +1,8 @@
 CREATE OR REPLACE FUNCTION svgDoc(
   paths text[],
   extent geometry,
-  width integer,
-  height integer,
+  width integer DEFAULT -1,
+  height integer DEFAULT -1,
   style text DEFAULT ''
 )
 RETURNS TEXT AS 
@@ -11,6 +11,8 @@ DECLARE
   vbData text;
   viewBox text;
   styleAttr text;
+  widthAttr text;
+  heightAttr text;
   svg text;
   xSize real;
   ySize real;
@@ -22,11 +24,21 @@ BEGIN
 
   styleAttr := '';
   IF style <> '' THEN
-    styleAttr := ' style="' || style || '"';
+    styleAttr := ' style="' || style || '" ';
   END IF;
 
-  svg := '<svg ' || ' width="' || width || '" height="' || height || '" ' 
-    || viewBox || styleAttr || ' xmlns="http://www.w3.org/2000/svg">' || E'\n';
+  widthAttr := '';
+  IF width >= 0 THEN
+    widthAttr := ' width="' || width || '" ';
+  END IF;
+
+  heightAttr := '';
+  IF height >= 0 THEN
+    heightAttr := ' height="' || height || '" ';
+  END IF;
+
+  svg := '<svg ' || widthAttr || heightAttr 
+    || viewBox || styleAttr || 'xmlns="http://www.w3.org/2000/svg">' || E'\n';
 
   FOR i IN 1..array_length( paths, 1) LOOP
     svg := svg || paths[i] || E'\n';
