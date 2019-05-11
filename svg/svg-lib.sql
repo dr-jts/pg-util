@@ -118,7 +118,7 @@ BEGIN
      radiusAttr := ' r="' || radius || '" ';
    END IF;
 
-   CASE ST_Dimension(geom) = 2
+   CASE ST_Dimension(geom)
    WHEN 1 THEN fillrule := ' fill="none" ';
    WHEN 2 THEN fillrule := ' fill-rule="evenodd" ';
    ELSE fillrule := '';
