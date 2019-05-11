@@ -5,9 +5,9 @@ CREATE OR REPLACE FUNCTION svgDoc(
   height integer DEFAULT -1,
   style text DEFAULT ''
 )
-RETURNS TEXT AS 
+RETURNS TEXT AS
 $$
-DECLARE 
+DECLARE
   vbData text;
   viewBox text;
   styleAttr text;
@@ -37,7 +37,7 @@ BEGIN
     heightAttr := ' height="' || height || '" ';
   END IF;
 
-  svg := '<svg ' || widthAttr || heightAttr 
+  svg := '<svg ' || widthAttr || heightAttr
     || viewBox || styleAttr || 'xmlns="http://www.w3.org/2000/svg">' || E'\n';
 
   FOR i IN 1..array_length( paths, 1) LOOP
@@ -46,33 +46,38 @@ BEGIN
 
   svg := svg || '</svg>';
   return svg;
-END; 
-$$ 
+END;
+$$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
 
-CREATE OR REPLACE FUNCTION svgPath(
+
+
+CREATE OR REPLACE FUNCTION svgShape(
   geom geometry,
   class text DEFAULT '',
   id text DEFAULT '',
   style text DEFAULT '',
-  attr text DEFAULT ''
+  attr text DEFAULT '',
+  radius float DEFAULT 1
 )
-RETURNS TEXT AS 
+RETURNS TEXT AS
 $$
-DECLARE 
- svg_geom text;
- fillrule text;
- classAttr TEXT;
- idAttr TEXT;
- styleAttr TEXT;
-
+DECLARE
+  svg_geom text;
+  svg_pts text;
+  fillrule text;
+  classAttr text;
+  idAttr text;
+  styleAttr text;
+  attrs text;
+  pathAttrs text;
+  radiusAttr text;
+  tag text;
+  geom_dump geometry[];
+  gcomp geometry;
+  outstr text;
 BEGIN
   -- TODO: wrap multigeoms in g element
-
- fillrule := ' fill="none" ';
- IF ST_Dimension(geom) = 2 THEN
-   fillrule := ' fill-rule="evenodd" ';
- END IF;
 
  classAttr := '';
  IF class <> '' THEN
@@ -89,44 +94,82 @@ BEGIN
   styleAttr := ' style="' || style || '"';
  END IF;
 
- svg_geom := ST_AsSVG(geom);
- -- points already have attribute names
- IF ST_Dimension(geom) > 0 THEN
-  svg_geom := ' d="' || svg_geom || '" ';
- END IF; 
+ attrs := classAttr || idAttr || styleAttr || attr;
+ geom_dump := ARRAY( SELECT (ST_Dump( geom )).geom );
 
- return ( '<path' || classAttr || idAttr || styleAttr || fillrule || attr || ' ' || svg_geom || ' />' )::text;
-END; 
-$$ 
+ IF array_length( geom_dump,1 ) > 1 THEN
+   outstr := '<g ' || attrs || '>' || E'\n';
+   pathAttrs := '';
+ ELSE
+   outstr := '';
+   pathAttrs := attrs;
+ END IF;
+
+ FOR i IN 1..array_length( geom_dump,1 ) LOOP
+   gcomp := geom_dump[i];
+   svg_pts := ST_AsSVG( gcomp );
+   tag := 'path';
+   radiusAttr := '';
+   -- points already have attribute names
+   IF ST_Dimension(geom) > 0 THEN
+     svg_pts := ' d="' || svg_pts || '" ';
+   ELSE
+     tag := 'circle';
+     radiusAttr := ' r="' || radius || '" ';
+   END IF;
+
+   CASE ST_Dimension(geom) = 2
+   WHEN 1 THEN fillrule := ' fill="none" ';
+   WHEN 2 THEN fillrule := ' fill-rule="evenodd" ';
+   ELSE fillrule := '';
+   END CASE;
+
+   IF i > 1 THEN
+     outstr := outstr || E'\n';
+   END IF;
+
+   svg_geom := '<' || tag || ' ' || pathAttrs || fillrule
+     || radiusAttr
+     || ' ' || svg_pts || ' />';
+   outstr := outstr || svg_geom;
+ END LOOP;
+
+  IF array_length( geom_dump,1 ) > 1 THEN
+   outstr := outstr || E'\n' || '</g>';
+ END IF;
+
+ RETURN outstr;
+END;
+$$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
 
 
 CREATE OR REPLACE FUNCTION svgStyleProp(
   VARIADIC arr text[]
 )
-RETURNS TEXT AS 
+RETURNS TEXT AS
 $$
-DECLARE 
+DECLARE
  strokeStr text;
  strokeWidthStr text;
- style TEXT;
+ style text;
 BEGIN
   style := '';
   FOR i IN 1..array_length( arr, 1)/2 LOOP
     style := style || arr[2*i-1] || ':' || arr[2*i] || '; ';
   END LOOP;
  return style;
-END; 
-$$ 
+END;
+$$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
 
 CREATE OR REPLACE FUNCTION svgStyle(
   stroke TEXT DEFAULT '',
   stroke_width real DEFAULT -1
 )
-RETURNS TEXT AS 
+RETURNS TEXT AS
 $$
-DECLARE 
+DECLARE
  strokeStr text;
  strokeWidthStr text;
  style TEXT;
@@ -144,6 +187,6 @@ BEGIN
 
  style := strokeStr || strokeWidthStr;
  return style;
-END; 
-$$ 
+END;
+$$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
