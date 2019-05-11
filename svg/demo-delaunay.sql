@@ -1,3 +1,8 @@
+------------------------------------------------------------------
+-- Demo of using SVG functions to display PostGIS Delaunay Triangulation
+-- Author: Martin Davis  2019
+------------------------------------------------------------------
+
 WITH input AS (
   SELECT 'MULTIPOINT ((50 50), (50 120), (100 100), (130 70), (130 150), (70 160), (160 110), (70 80))'::geometry geom
 ),
