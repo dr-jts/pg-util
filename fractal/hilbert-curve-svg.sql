@@ -35,5 +35,5 @@ hilbert AS (
 SELECT '<svg viewBox="-2 -17 19 19" style="stroke-width:0.4; stroke-linecap:round;" xmlns="http://www.w3.org/2000/svg">' || E'\n'
     || string_agg( '<path style="stroke:hsl(' || (360*(id/256.0))::integer || ',100%,50%);" fill="none" '
       || ' d="' || ST_AsSVG( geom ) || '" />', E'\n' )
-   || E'\n' || '</svg>' || E'\n'
+   || E'\n' || '</svg>' || E'\n' AS svg
   FROM hilbert;
