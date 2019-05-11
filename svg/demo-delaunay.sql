@@ -6,14 +6,14 @@ result AS (
 ),
 shapes AS (
   SELECT geom, svgShape( geom,
-    style => svgStyleProp('stroke', '#0000ff',
+    style => svgStyle('stroke', '#0000ff',
         'stroke-width', 1::text,
         'fill', '#a0a0ff',
         'stroke-linejoin', 'round' ) )
     svg FROM result
   UNION ALL
   SELECT geom, svgShape( geom, radius=>2,
-    style => svgStyleProp( 'fill', '#ff0000'  ) )
+    style => svgStyle( 'fill', '#ff0000'  ) )
     svg FROM input
 )
 SELECT svgDoc( array_agg( svg ),
