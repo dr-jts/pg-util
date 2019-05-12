@@ -7,5 +7,5 @@ SQL queries to generate various kinds of fractals as PostGIS geometries, and out
 
 ## SVG
 
-A set of SQL functions to convert PostGIS geometry to styled SVG markup.
+A set of SQL functions to convert PostGIS geometry to SVG markup.
 
