@@ -1,11 +1,14 @@
+----------------------------------------
+-- Function: svgDoc
+----------------------------------------
 CREATE OR REPLACE FUNCTION svgDoc(
-  paths text[],
+  content text[],
   extent geometry,
   width integer DEFAULT -1,
   height integer DEFAULT -1,
   style text DEFAULT ''
 )
-RETURNS TEXT AS
+RETURNS text AS
 $$
 DECLARE
   vbData text;
@@ -40,8 +43,8 @@ BEGIN
   svg := '<svg ' || widthAttr || heightAttr
     || viewBox || styleAttr || 'xmlns="http://www.w3.org/2000/svg">' || E'\n';
 
-  FOR i IN 1..array_length( paths, 1) LOOP
-    svg := svg || paths[i] || E'\n';
+  FOR i IN 1..array_length( content, 1) LOOP
+    svg := svg || contents[i] || E'\n';
   END LOOP;
 
   svg := svg || '</svg>';
@@ -51,7 +54,9 @@ $$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
 
 
-
+----------------------------------------
+-- Function: svgShape
+----------------------------------------
 CREATE OR REPLACE FUNCTION svgShape(
   geom geometry,
   class text DEFAULT '',
@@ -60,7 +65,7 @@ CREATE OR REPLACE FUNCTION svgShape(
   attr text DEFAULT '',
   radius float DEFAULT 1
 )
-RETURNS TEXT AS
+RETURNS text AS
 $$
 DECLARE
   svg_geom text;
@@ -77,8 +82,6 @@ DECLARE
   gcomp geometry;
   outstr text;
 BEGIN
-  -- TODO: wrap multigeoms in g element
-
  classAttr := '';
  IF class <> '' THEN
   classAttr :=  (' class="' || class || '"');
@@ -143,16 +146,19 @@ END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
 
-
+----------------------------------------
+-- Function: svgStyle
+-- Encodes CSS name:values from list of parameters
+----------------------------------------
 CREATE OR REPLACE FUNCTION svgStyle(
   VARIADIC arr text[]
 )
 RETURNS TEXT AS
 $$
 DECLARE
- strokeStr text;
- strokeWidthStr text;
- style text;
+  strokeStr text;
+  strokeWidthStr text;
+  style text;
 BEGIN
   style := '';
   FOR i IN 1..array_length( arr, 1)/2 LOOP
@@ -163,30 +169,34 @@ END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
 
+----------------------------------------
+-- Function: svgStyleProp
+-- Encodes named parameters as CSS name-values
+----------------------------------------
 CREATE OR REPLACE FUNCTION svgStyleProp(
-  stroke TEXT DEFAULT '',
+  stroke text DEFAULT '',
   stroke_width real DEFAULT -1
 )
-RETURNS TEXT AS
+RETURNS text AS
 $$
 DECLARE
- strokeStr text;
- strokeWidthStr text;
- style TEXT;
+  strokeStr text;
+  strokeWidthStr text;
+  style text;
 BEGIN
 
- strokeStr := '';
- IF stroke <> '' THEN
-  strokeStr :=  (' stroke:' || stroke || ';');
- END IF;
+  strokeStr := '';
+  IF stroke <> '' THEN
+    strokeStr :=  (' stroke:' || stroke || ';');
+  END IF;
 
- strokeWidthStr := '';
- IF stroke_width >= 0 THEN
-  strokeWidthStr :=  (' stroke-width:' || stroke_width || ';');
- END IF;
+  strokeWidthStr := '';
+  IF stroke_width >= 0 THEN
+    strokeWidthStr :=  (' stroke-width:' || stroke_width || ';');
+  END IF;
 
- style := strokeStr || strokeWidthStr;
- return style;
+  style := strokeStr || strokeWidthStr;
+  RETURN style;
 END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
