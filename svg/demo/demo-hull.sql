@@ -14,9 +14,9 @@ concave AS (
 ),
 shapes AS (
   SELECT geom, svgShape( geom,
-    style => svgStyle('stroke', '#aa00aa',
+    style => svgStyle('stroke', '#0088cc',
         'stroke-width', 1::text,
-        'fill', '#ff80ff',
+        'fill', '#88ccff',
         'stroke-linejoin', 'round' ) )
     svg FROM convex
   UNION ALL
@@ -33,5 +33,5 @@ shapes AS (
     svg FROM input
 )
 SELECT svgDoc( array_agg( svg ),
-  ST_Expand( ST_Extent(geom), 5)
+    ST_Expand( ST_Extent(geom), 5)
   ) AS svg FROM shapes;
