@@ -206,14 +206,14 @@ LANGUAGE 'plpgsql' IMMUTABLE STRICT;
 -- Encodes HSL function call
 ----------------------------------------
 CREATE OR REPLACE FUNCTION svgHSL(
-  h real,
-  s real DEFAULT 100,
-  l real DEFAULT 50
+  hue real,
+  saturation real DEFAULT 100,
+  lightness real DEFAULT 50
 )
 RETURNS text AS
 $$
 BEGIN
-  RETURN 'hsl(' || h || ',' || s || '%,' || l || '%)';
+  RETURN 'hsl(' || hue || ',' || saturation || '%,' || lightness || '%)';
 END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
