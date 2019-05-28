@@ -1,3 +1,10 @@
+--======================================
+-- PostGIS SVg functions
+-- Martin Davis  2019
+--======================================
+
+-- psql < ../svg-lib.sql
+
 ----------------------------------------
 -- Function: svgDoc
 ----------------------------------------
@@ -206,9 +213,9 @@ LANGUAGE 'plpgsql' IMMUTABLE STRICT;
 -- Encodes HSL function call
 ----------------------------------------
 CREATE OR REPLACE FUNCTION svgHSL(
-  hue real,
-  saturation real DEFAULT 100,
-  lightness real DEFAULT 50
+  hue numeric,
+  saturation numeric DEFAULT 100,
+  lightness numeric DEFAULT 50
 )
 RETURNS text AS
 $$
