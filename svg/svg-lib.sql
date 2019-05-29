@@ -51,7 +51,7 @@ BEGIN
     || viewBox || styleAttr || 'xmlns="http://www.w3.org/2000/svg">' || E'\n';
 
   FOR i IN 1..array_length( content, 1) LOOP
-    svg := svg || contents[i] || E'\n';
+    svg := svg || content[i] || E'\n';
   END LOOP;
 
   svg := svg || '</svg>';
@@ -213,9 +213,9 @@ LANGUAGE 'plpgsql' IMMUTABLE STRICT;
 -- Encodes HSL function call
 ----------------------------------------
 CREATE OR REPLACE FUNCTION svgHSL(
-  hue numeric,
-  saturation numeric DEFAULT 100,
-  lightness numeric DEFAULT 50
+  hue float8,
+  saturation float8 DEFAULT 100,
+  lightness float8 DEFAULT 50
 )
 RETURNS text AS
 $$
