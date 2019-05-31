@@ -70,6 +70,7 @@ CREATE OR REPLACE FUNCTION svgShape(
   id text DEFAULT '',
   style text DEFAULT '',
   attr text DEFAULT '',
+  title text DEFAULT '',
   radius float DEFAULT 1
 )
 RETURNS text AS
@@ -86,6 +87,7 @@ DECLARE
   radiusAttr text;
   tag text;
   geom_dump geometry[];
+  isGrp boolean;
   gcomp geometry;
   outstr text;
 BEGIN
@@ -107,7 +109,8 @@ BEGIN
  attrs := classAttr || idAttr || styleAttr || attr;
  geom_dump := ARRAY( SELECT (ST_Dump( geom )).geom );
 
- IF array_length( geom_dump,1 ) > 1 THEN
+ isGrp := array_length( geom_dump,1 ) > 1;
+ IF isGrp THEN
    outstr := '<g ' || attrs || '>' || E'\n';
    pathAttrs := '';
  ELSE
@@ -140,12 +143,23 @@ BEGIN
 
    svg_geom := '<' || tag || ' ' || pathAttrs || fillrule
      || radiusAttr
-     || ' ' || svg_pts || ' />';
+     || ' ' || svg_pts;
    outstr := outstr || svg_geom;
+
+   IF title <> '' AND NOT isGrp THEN
+     outstr := outstr || '><title>' || title || '</title>';
+     outstr := outstr || '</' || tag || '>';
+   ELSE
+     outstr := outstr || ' />';
+   END IF;
  END LOOP;
 
-  IF array_length( geom_dump,1 ) > 1 THEN
-   outstr := outstr || E'\n' || '</g>';
+ IF isGrp THEN
+   outstr := outstr || E'\n';
+   IF title <> '' THEN
+     outstr := outstr || '<title>' || title || '</title>';
+   END IF;
+   outstr := outstr || '</g>';
  END IF;
 
  RETURN outstr;
