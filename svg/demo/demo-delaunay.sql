@@ -11,6 +11,7 @@ result AS (
 ),
 shapes AS (
   SELECT geom, svgShape( geom,
+    title => 'Delaunay Triangulation',
     style => svgStyle('stroke', '#0000ff',
         'stroke-width', 1::text,
         'fill', '#a0a0ff',
@@ -18,6 +19,7 @@ shapes AS (
     svg FROM result
   UNION ALL
   SELECT geom, svgShape( geom, radius=>2,
+    title => 'Site',
     style => svgStyle( 'fill', '#ff0000'  ) )
     svg FROM input
 )

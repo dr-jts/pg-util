@@ -14,6 +14,7 @@ concave AS (
 ),
 shapes AS (
   SELECT geom, svgShape( geom,
+    title => 'Convex Hull',
     style => svgStyle('stroke', '#0088cc',
         'stroke-width', 1::text,
         'fill', '#88ccff',
@@ -21,6 +22,7 @@ shapes AS (
     svg FROM convex
   UNION ALL
   SELECT geom, svgShape( geom,
+    title => 'Concave Hull',
     style => svgStyle('stroke', '#0000ff',
         'stroke-width', 1::text,
         'stroke-opacity', 0.5::text,
