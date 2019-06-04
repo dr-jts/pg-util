@@ -55,7 +55,7 @@ BEGIN
   END LOOP;
 
   svg := svg || '</svg>';
-  return svg;
+  RETURN svg;
 END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
@@ -185,7 +185,7 @@ BEGIN
   FOR i IN 1..array_length( arr, 1)/2 LOOP
     style := style || arr[2*i-1] || ':' || arr[2*i] || '; ';
   END LOOP;
- return style;
+  RETURN style;
 END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
