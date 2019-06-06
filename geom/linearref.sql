@@ -8,11 +8,20 @@ CREATE OR REPLACE FUNCTION LineSubstringLine(
 )
 RETURNS geometry AS
 $$
+DECLARE
+  loc1 float8;
+  loc2 float8;
+  tmp float8;
 BEGIN
-  RETURN ST_LineSubstring( line,
-    ST_LineLocatePoint(line, ST_StartPoint( clipLine )),
-    ST_LineLocatePoint(line, ST_EndPoint( clipLine ))
-  );
+  loc1 = ST_LineLocatePoint(line, ST_StartPoint( clipLine ));
+  loc2 = ST_LineLocatePoint(line, ST_EndPoint( clipLine ));
+  -- locations must be in order along target line
+  IF loc1 > loc2 THEN
+    tmp = loc1;
+    loc1 = loc2;
+    loc2 = tmp;
+  END IF;
+  RETURN ST_LineSubstring( line, loc1, loc2 );
 END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;

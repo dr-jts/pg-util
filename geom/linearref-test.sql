@@ -17,6 +17,12 @@ UNION SELECT ST_OrderingEquals( LineSubstringLine(
     'LINESTRING(1 1, 3 3, 5 5)',
     'LINESTRING(0 0, 9 9)'),
     'LINESTRING(1 1, 3 3, 5 5)')
+-- test lines in opposite directions
+UNION SELECT ST_OrderingEquals( ST_SnapToGrid( LineSubstringLine(
+    'LINESTRING(1 1, 9 9)',
+    'LINESTRING(8 8, 2 2)'),
+        0.0000001 ),
+    'LINESTRING(2 2, 8 8)')
 ;
 
 SELECT LineMatch(
