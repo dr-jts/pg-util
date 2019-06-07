@@ -17,7 +17,9 @@ z(ix, iy, cx, cy, x, y, i) AS (
     CROSS JOIN
         (SELECT -1.5 + 0.0074 * i, i FROM x) AS ygen(y, iy)
     UNION ALL
-    SELECT ix, iy, cx, cy, x * x - y * y + cx AS x, y * x * 2 + cy, i + 1
+    SELECT ix, iy, cx, cy,
+        x*x - y*y + cx AS x,
+        y*x*2 + cy AS y, i + 1
     FROM z
     WHERE x*x + y*y < 16.0
     AND i < 27
@@ -56,7 +58,9 @@ plot(iy, ix, ixend, i, b, g) AS (
     FROM itrun
     ORDER BY iy, ix
 )
-SELECT '<svg viewBox="0 0 400 400" style="stroke-width:0" xmlns="http://www.w3.org/2000/svg">' || E'\n'
+SELECT '<svg viewBox="0 0 400 400" '
+    || ' style="stroke-width:0" xmlns="http://www.w3.org/2000/svg">'
+    || E'\n'
     || string_agg(
         '<rect style="fill:rgb(' || g || ',' || g || ',' || b || ');"  '
         || ' x="' || ix || '" y="' || iy

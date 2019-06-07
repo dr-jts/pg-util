@@ -41,9 +41,11 @@ plot(Ix, Iy, I, b, g) AS (
     FROM Zt
     ORDER BY Iy, Ix
 )
-SELECT '<svg viewBox="0 0 400 400" style="stroke-width:0" xmlns="http://www.w3.org/2000/svg">' || E'\n'
+SELECT '<svg viewBox="0 0 400 400" style="stroke-width:0" xmlns="http://www.w3.org/2000/svg">'
+    || E'\n'
     || string_agg(
         '<rect style="fill:rgb(' || g || ',' || g || ',' || b || ');"  '
-        || ' x="' || Ix || '" y="' || Iy || '" width="1" height="1" />', E'\n' )
-    || E'\n' || '</svg>' || E'\n' AS svg
+          || ' x="' || Ix || '" y="' || Iy
+          || '" width="1" height="1" />', E'\n' )
+    || '</svg>' || E'\n' AS svg
   FROM plot;
