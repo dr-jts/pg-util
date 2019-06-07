@@ -38,7 +38,7 @@ LANGUAGE 'plpgsql' IMMUTABLE STRICT;
 -- Test if a path matches a line within a match distance tolerance
 -------------------------------------
 CREATE OR REPLACE FUNCTION PathMatchesLine(
-    path geometry,
+    pathLine geometry,
     line geometry,
     matchDist float8
 )
@@ -46,7 +46,7 @@ RETURNS boolean AS
 $$
 BEGIN
   RETURN matchDist >= ST_HausdorffDistance(
-    LineSubstringLine( path, line ), line);
+    LineSubstringLine( pathLine, line ), line);
 END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
