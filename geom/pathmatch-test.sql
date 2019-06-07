@@ -1,5 +1,5 @@
 --=====================================
--- Tests for Linear Referencincg Utilities
+-- Tests for Path Matching Utilities
 --=====================================
 
 -- base line segment clipped to a shorter segment
@@ -25,10 +25,12 @@ UNION SELECT ST_OrderingEquals( ST_SnapToGrid( LineSubstringLine(
     'LINESTRING(2 2, 8 8)')
 ;
 
-SELECT LineMatch(
+-- Test path longer than line
+SELECT PathMatchesLine(
     'LINESTRING(0 0, 9 0)',
     'LINESTRING(1 0.1, 3 0.1)', 0.2)
-UNION SELECT NOT LineMatch(
+-- Test path longer than line with no match
+UNION SELECT NOT PathMatchesLine(
     'LINESTRING(0 0, 9 0)',
     'LINESTRING(1 0.1, 1 3)', 0.2)
 ;

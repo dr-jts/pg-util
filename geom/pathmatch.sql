@@ -1,7 +1,13 @@
 --=====================================
--- Linear Referencincg Utilities
+-- Path Matching Utilities
 --=====================================
 
+-------------------------------------
+-- Function: LineSubstringLine
+--
+-- Extract substring of line determined by
+-- closest locations to start and end of clipLine
+-------------------------------------
 CREATE OR REPLACE FUNCTION LineSubstringLine(
     line geometry,
     clipLine geometry
@@ -26,16 +32,21 @@ END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
 
-CREATE OR REPLACE FUNCTION LineMatch(
-    line1 geometry,
-    line2 geometry,
-    matchTol float8
+-------------------------------------
+-- Function: PathMatchesLine
+--
+-- Test if a path matches a line within a match distance tolerance
+-------------------------------------
+CREATE OR REPLACE FUNCTION PathMatchesLine(
+    path geometry,
+    line geometry,
+    matchDist float8
 )
 RETURNS boolean AS
 $$
 BEGIN
-  RETURN matchTol >= ST_HausdorffDistance(
-    LineSubstringLine( line1, line2 ), line2);
+  RETURN matchDist >= ST_HausdorffDistance(
+    LineSubstringLine( path, line ), line);
 END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
