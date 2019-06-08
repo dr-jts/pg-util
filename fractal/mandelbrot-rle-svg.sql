@@ -24,25 +24,25 @@ z(ix, iy, cx, cy, x, y, i) AS (
     WHERE x*x + y*y < 16.0
     AND i < 27
 ),
-itlim (ix, iy, i) AS (
+itermax (ix, iy, i) AS (
     SELECT ix, iy, MAX(i) AS i
     FROM z
     GROUP BY iy, ix
 ),
-itrunstart AS (
+runstart AS (
     SELECT iy, ix, I,
     CASE WHEN I = LAG(I) OVER (PARTITION BY iy ORDER By ix)
         THEN 0 ELSE 1 END AS runstart
-    FROM itlim
+    FROM itermax
 ),
-itrunid AS (
+runid AS (
     SELECT iy, ix, I,
         SUM(runstart) OVER (PARTITION BY iy ORDER By ix) AS run
-    FROM itrunstart
+    FROM runstart
 ),
-itrun AS (
+rungroup AS (
     SELECT iy, MIN(ix) ix, MAX(ix) ixend, MIN(i) i
-    FROM itrunid
+    FROM runid
     GROUP BY iy, run
 ),
 plot(iy, ix, ixend, i, b, g) AS (
@@ -55,7 +55,7 @@ plot(iy, ix, ixend, i, b, g) AS (
         WHEN i < 18 THEN 0
         WHEN i < 27 THEN (255 * (i - 18) / (27 - 18 ))::integer
         ELSE 0 END AS g
-    FROM itrun
+    FROM rungroup
     ORDER BY iy, ix
 )
 SELECT '<svg viewBox="0 0 400 400" '
