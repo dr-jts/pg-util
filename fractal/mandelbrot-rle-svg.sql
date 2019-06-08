@@ -59,7 +59,7 @@ plot(iy, ix, ixend, i, b, g) AS (
     ORDER BY iy, ix
 )
 SELECT '<svg viewBox="0 0 400 400" '
-    || ' style="stroke-width:0" xmlns="http://www.w3.org/2000/svg">'
+    || 'style="stroke-width:0" xmlns="http://www.w3.org/2000/svg">'
     || E'\n'
     || string_agg(
         '<rect style="fill:rgb(' || g || ',' || g || ',' || b || ');"  '
