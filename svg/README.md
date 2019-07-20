@@ -10,7 +10,14 @@ psql < ../svg-lib.sql
 
 ## Functions
 
-* **SVGDoc** - Creates an SVG doc element from an array of content elements.  The bounding box of the geometries is provided
-  as a `geometry`, in order to construct the SVG `viewbox` attribute.  Optional `width` and `height` arguments can be supplied
-  for the view.  An optional `style` argument allows specifying CSS styling at the document level (see `SVGStyle` function)
+### SVGDoc
+
+Creates an SVG doc element from an array of content elements.  
+
+* `content` - an array of strings output as the content of the `<svg>` element
+* `extent1 - a `geometry` providing the bounding box of the geometries being output.
+    Used to construct the SVG `viewbox` attribute.  
+* `width` (opt) - width of view
+* `height` (opt) - height of view
+* `style` (opt) - specifies CSS styling at the document level (see `SVGStyle` function)
   
