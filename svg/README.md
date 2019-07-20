@@ -1,4 +1,4 @@
-# PostGIS SVG Functions
+# SVG Functions for PostGIS
 
 A collection of PostgreSQL functions which allow easily converting PostGIS geometries into styled SVG documents.
 
