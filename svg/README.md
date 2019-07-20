@@ -2,7 +2,7 @@
 
 A collection of PostgreSQL functions which allow easily converting PostGIS geometries into styled SVG documents.
 
-## Installion
+## Installation
 
 ```
 psql < ../svg-lib.sql
