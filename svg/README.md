@@ -15,7 +15,7 @@ psql < ../svg-lib.sql
 Creates an SVG doc element from an array of content elements.  
 
 * `content` - an array of strings output as the content of the `<svg>` element
-* `extent1 - a `geometry` providing the bounding box of the geometries being output.
+* `extent` - a `geometry` providing the bounding box of the geometries being output.
     Used to construct the SVG `viewbox` attribute.  
 * `width` (opt) - width of view
 * `height` (opt) - height of view
