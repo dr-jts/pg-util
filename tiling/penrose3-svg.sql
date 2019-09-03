@@ -1,5 +1,13 @@
 --================================================
--- Penrose P3 Tiling, initialized by single L triangle
+-- Penrose P3 Tiling created by inflation, initialized by single L triangle
+
+-- Initial triangle is an L triangle ABC with long edge A-C of length 200
+-- lying along X axis and centred at the origin
+-- L triangle sides are in the ratio 1:1:phi.
+-- Thus the height of the B vertex is 100 * sin( phi/2 )
+
+-- The number of output tiles is determined by the depth of recursion,
+-- which is specified by the LEVEL value.
 --================================================
 
 -- psql -A -t -o penrose3.svg  < penrose3-svg.sql
@@ -8,7 +16,7 @@ WITH RECURSIVE
 tri(i, type,  ax,ay, bx,by, cx,cy, psi, psi2) AS (
 	SELECT 0, 'L',
 		-100::float8 AS ax, 0::float8 AS ay,
-		0::float8    AS bx, 100*sin( (sqrt(5)+1.0)/4.0 ) AS by,
+		0::float8    AS bx, 100 * sin( (sqrt(5)+1.0)/4.0 ) AS by,
 		100::float8  AS cx, 0::float8 AS cy,
 		-- psi = 1/phi. phi is the Golden Ratio (sqrt(5) + 1)/2
 		(sqrt(5)-1)/2 AS psi,
