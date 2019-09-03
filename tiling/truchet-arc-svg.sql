@@ -11,8 +11,7 @@ grid(x, y, type) AS (
     CROSS JOIN generate_series(0, 20) as s(y)
 ),
 truchet( tile )  AS (
-    SELECT '<path d="' ||
-        CASE type WHEN 1 THEN
+    SELECT '<path d="' || CASE type WHEN 1 THEN
             'M ' || (x + 5) || ' ' || y
             || ' A 5 5 -45 0 1 ' || x || ' ' || (y + 5)
             || 'M ' || (x + 10) || ' ' || (y + 5)
@@ -24,7 +23,7 @@ truchet( tile )  AS (
             || ' A 5 5 -45 0 0 ' || x + 10 || ' ' || y + 5
         END || '" '
         || 'style="stroke:' || CASE type WHEN 1 THEN 'royalblue' ELSE 'royalblue' END || '" '
-        || ' />' As tile
+        || ' />' AS tile
       FROM grid
 )
 SELECT '<svg viewBox="-5 -5 220 220" '
