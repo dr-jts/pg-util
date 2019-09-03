@@ -7,8 +7,13 @@
 WITH RECURSIVE
 tri(i, type,  ax,ay, bx,by, cx,cy, psi, psi2) AS (
 	SELECT 0, 'L',
-		-100::float8, 0::float8,   0::float8, 100*sqrt(1 - ((sqrt(5)+1.0)/4.0)^2 ),   100::float8, 0::float8,
-		(sqrt(5)-1)/2 AS psi, 1 - (sqrt(5)-1)/2 AS psi2
+		-100::float8 AS ax, 0::float8 AS ay,
+		0::float8    AS bx, 100*sin( (sqrt(5)+1.0)/4.0 ) AS by,
+		100::float8  AS cx, 0::float8 AS cy,
+		-- psi = 1/phi. phi is the Golden Ratio (sqrt(5) + 1)/2
+		(sqrt(5)-1)/2 AS psi,
+		-- psi^2 = 1 - psi
+		1 - (sqrt(5)-1)/2 AS psi2
 	UNION ALL
 	SELECT i+1, trimap.subtype AS type,
 		CASE split
@@ -57,9 +62,9 @@ tri(i, type,  ax,ay, bx,by, cx,cy, psi, psi2) AS (
 		( 'S', 4, 'S'),
 		( 'S', 5, 'L') ) AS trimap(type, split, subtype)
 		ON tri.type = trimap.type
-	WHERE i <= 6 ),
+	WHERE i <= 5 ),  -- LEVEL
 toptri AS (
-	SELECT * FROM tri WHERE i = 6
+	SELECT * FROM tri WHERE i = 5  -- LEVEL
 ),
 conjugate AS (
 	SELECT type,ax,ay,bx,by,cx,cy FROM toptri
@@ -76,11 +81,11 @@ tiling AS (
 	SELECT DISTINCT ON (midx, midy) type,ax,ay,bx,by,cx,cy,
 		midx - (bx - midx) AS dx,
 		midy - (by - midy) AS dy,
-		CASE type WHEN 'L' THEN '#ffff80' WHEN 'S' THEN '#8080ff' END AS clr
+		CASE type WHEN 'L' THEN 'steelblue' WHEN 'S' THEN 'lightskyblue' END AS clr
 	FROM rhombs
 )
-SELECT '<svg viewBox="-110 -60 220 120" '
-    || 'style="stroke-width:0.2 ;stroke:#000000" xmlns="http://www.w3.org/2000/svg">'
+SELECT '<svg viewBox="-110 -80 220 160" '
+    || 'style="stroke-width:0.4 ;stroke:#ffffff" xmlns="http://www.w3.org/2000/svg">'
     || E'\n'
     || string_agg(
         '<polygon style="fill:' || clr || ';"  '
