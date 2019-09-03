@@ -1,10 +1,9 @@
 --================================================
 -- Penrose P3 Tiling created by inflation, initialized by 5 S triangles
 
--- Initial triangle is an L triangle ABC with long edge A-C of length 200
--- lying along X axis and centred at the origin
--- L triangle sides are in the ratio 1:1:phi.
--- Thus the height of the B vertex is 100 * sin( phi/2 )
+-- Initial state is 5 S triangles in a fan in the positive Y halfplane
+-- and centred at the origin.
+-- The small interior angle of the S triangle is 38 degrees = PI/5
 
 -- The number of output tiles is determined by the depth of recursion,
 -- which is specified by the LEVEL value.
