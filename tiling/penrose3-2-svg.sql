@@ -1,5 +1,5 @@
 --================================================
--- Penrose P3 Tiling created by inflation, initialized by single L triangle
+-- Penrose P3 Tiling created by inflation, initialized by 5 S triangles
 
 -- Initial triangle is an L triangle ABC with long edge A-C of length 200
 -- lying along X axis and centred at the origin
@@ -10,15 +10,35 @@
 -- which is specified by the LEVEL value.
 --================================================
 
--- psql -A -t -o penrose3.svg  < penrose3-svg.sql
+-- psql -A -t -o penrose3-2.svg  < penrose3-2-svg.sql
 
 WITH RECURSIVE
 init(type, ax,ay, bx,by, cx,cy) AS (
 	SELECT * FROM (VALUES
-		( 'L',
-			-100::float8, 0::float8,
-			0::float8   , 100 * sin( (sqrt(5)+1.0)/4.0 ),
-			100::float8, 0::float8
+		( 'S',
+			100::float8, 0::float8,
+			0::float8, 0::float8,
+			100 * cos( pi() / 5 ), 100 * sin( pi() / 5 )
+		),
+		( 'S',
+			100 * cos( 2 * pi() / 5 ), 100 * sin( 2 * pi() / 5 ),
+			0::float8, 0::float8,
+			100 * cos( pi() / 5 ), 100 * sin( pi() / 5 )
+		),
+		( 'S',
+			100 * cos( 2 * pi() / 5 ), 100 * sin( 2 * pi() / 5 ),
+			0::float8, 0::float8,
+			100 * cos( 3 * pi() / 5 ), 100 * sin( 3 * pi() / 5 )
+		),
+		( 'S',
+			100 * cos( 4 * pi() / 5 ), 100 * sin( 4 * pi() / 5 ),
+			0::float8, 0::float8,
+			100 * cos( 3 * pi() / 5 ), 100 * sin( 3 * pi() / 5 )
+		),
+		( 'S',
+			100 * cos( 4 * pi() / 5 ), 100 * sin( 4 * pi() / 5 ),
+			0::float8, 0::float8,
+			-100::float8, 0::float8
 		) ) AS t (type, ax,ay, bx,by, cx,cy)
 ),
 tri(i, type,  ax,ay, bx,by, cx,cy, psi, psi2) AS (
@@ -76,9 +96,9 @@ tri(i, type,  ax,ay, bx,by, cx,cy, psi, psi2) AS (
 		( 'S', 4, 'S'),
 		( 'S', 5, 'L') ) AS trimap(type, split, subtype)
 		ON tri.type = trimap.type
-	WHERE i <= 5 ),  -- LEVEL
+	WHERE i <= 4 ),  -- LEVEL
 toptri AS (
-	SELECT * FROM tri WHERE i = 5  -- LEVEL
+	SELECT * FROM tri WHERE i = 4  -- LEVEL
 ),
 conjugate AS (
 	SELECT type,ax,ay,bx,by,cx,cy FROM toptri
@@ -95,10 +115,10 @@ tiling AS (
 	SELECT DISTINCT ON (midx, midy) type,ax,ay,bx,by,cx,cy,
 		midx - (bx - midx) AS dx,
 		midy - (by - midy) AS dy,
-		CASE type WHEN 'L' THEN 'burlywood' WHEN 'S' THEN 'brown' END AS clr
+		CASE type WHEN 'L' THEN 'steelblue' WHEN 'S' THEN 'lightskyblue' END AS clr
 	FROM rhombs
 )
-SELECT '<svg viewBox="-110 -80 220 160" '
+SELECT '<svg viewBox="-110 -120 220 240" '
     || 'style="stroke-width:0.4 ;stroke:#ffffff" xmlns="http://www.w3.org/2000/svg">'
     || E'\n'
     || string_agg(
