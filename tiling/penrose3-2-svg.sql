@@ -117,16 +117,11 @@ tiling AS (
 		CASE type WHEN 'L' THEN 'steelblue' WHEN 'S' THEN 'lightskyblue' END AS clr
 	FROM rhombs
 )
-SELECT '<svg viewBox="-110 -120 220 240" '
-    || 'style="stroke-width:0.4 ;stroke:#ffffff" xmlns="http://www.w3.org/2000/svg">'
-    || E'\n'
-    || string_agg(
-        '<polygon style="fill:' || clr || ';"  '
-        || ' points="'
-			|| ax || ',' || ay || ' '
-			|| bx || ',' || by || ' '
-			|| cx || ',' || cy || ' '
-			|| dx || ',' || dy
-        || '" />', E'\n' )
-    || E'\n' || '</svg>' || E'\n' AS svg
+SELECT svgDoc( array_agg( svgPolygon(
+		ARRAY[ ax, ay, bx, by, cx, cy, dx, dy],
+		style => svgStyle( 'stroke', 'white', 'stroke-width', '1',
+			'fill', clr )
+		) ),
+  		ST_Expand( 'LINESTRING( -110 -120, 110 110)'::geometry, 5)
+  	) AS svg
   FROM tiling;
