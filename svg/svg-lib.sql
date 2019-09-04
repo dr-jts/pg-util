@@ -3,7 +3,7 @@
 -- Martin Davis  2019
 --======================================
 
--- psql < ../svg-lib.sql
+-- psql < svg-lib.sql
 
 ----------------------------------------
 -- Function: svgDoc
@@ -225,6 +225,10 @@ LANGUAGE 'plpgsql' IMMUTABLE STRICT;
 ----------------------------------------
 -- Function: svgHSL
 -- Encodes HSL function call
+-- Parameters:
+-- hue : value from 0 to 360
+-- saturation : percentage value (default 100)
+-- lightness : percentage (default 50)
 ----------------------------------------
 CREATE OR REPLACE FUNCTION svgHSL(
   hue float8,
@@ -238,3 +242,22 @@ BEGIN
 END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
+
+----------------------------------------
+-- Function: svgRandInt
+-- Returns a random integer in a range
+-- Parameters:
+-- lo : low value in range (inclusive)
+-- hi : highest value in range (inclusive)
+----------------------------------------
+CREATE OR REPLACE FUNCTION svgRandInt(
+  lo integer,
+  hi integer
+)
+RETURNS integer AS
+$$
+BEGIN
+  RETURN floor(random() * (hi - lo + 1) ) + lo;
+END;
+$$
+LANGUAGE 'plpgsql' VOLATILE STRICT;
