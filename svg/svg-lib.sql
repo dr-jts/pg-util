@@ -190,33 +190,33 @@ DECLARE
   attrs text;
   sep text;
 BEGIN
- classAttr := '';
- IF class <> '' THEN
-  classAttr := ' class="' || class || '"';
- END IF;
+  classAttr := '';
+  IF class <> '' THEN
+    classAttr := ' class="' || class || '"';
+  END IF;
 
- idAttr := '';
- IF id <> '' THEN
-  idAttr := ' id="' || id || '"';
- END IF;
+  idAttr := '';
+  IF id <> '' THEN
+    idAttr := ' id="' || id || '"';
+  END IF;
 
- styleAttr := '';
- IF style <> '' THEN
-  styleAttr := ' style="' || style || '"';
- END IF;
+  styleAttr := '';
+  IF style <> '' THEN
+    styleAttr := ' style="' || style || '"';
+  END IF;
 
- attrs := classAttr || idAttr || styleAttr || attr;
+  attrs := classAttr || idAttr || styleAttr || attr;
 
- svg_pts := '';
- FOR i IN 1..array_length( pts, 1 ) LOOP
-   sep := CASE i % 2 WHEN 0 THEN ' ' ELSE ',' END;
-   svg_pts := svg_pts || pts[i] || sep;
- END LOOP;
+  svg_pts := '';
+  FOR i IN 1..array_length( pts, 1 ) LOOP
+    sep := CASE i % 2 WHEN 0 THEN ' ' ELSE ',' END;
+    svg_pts := svg_pts || pts[i] || sep;
+  END LOOP;
 
- svg_poly := '<polygon ' || attrs
+  svg_poly := '<polygon ' || attrs
      || ' points="' || svg_pts || '" />';
 
- RETURN svg_poly;
+  RETURN svg_poly;
 END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
