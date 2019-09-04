@@ -212,9 +212,8 @@ BEGIN
    sep := CASE i % 2 WHEN 0 THEN ' ' ELSE ',' END;
    svg_pts := svg_pts || pts[i] || sep;
  END LOOP;
- fillrule := ' fill-rule="evenodd" ';
 
- svg_poly := '<polygon ' || attrs || fillrule
+ svg_poly := '<polygon ' || attrs
      || ' points="' || svg_pts || '" />';
 
  RETURN svg_poly;
