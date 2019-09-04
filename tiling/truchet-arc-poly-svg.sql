@@ -32,22 +32,23 @@ pts AS (
 arcs (sx, sy,   mx, my,   ex, ey) AS (
     SELECT x+sx,y+sy,    x+mx,y+my,    x+ex,y+ey  from grid JOIN pts ON grid.type = pts.type
 ),
-arcsClosing (sx, sy,   mx, my,   ex, ey) AS (
-    SELECT 10*i + 5, 0,   10*i + 10, -5,   10*i + 15,0
-        FROM generate_series(0, 19, 1) AS t(i)
+ordEdge AS (
+    SELECT * FROM generate_series(0, 19,
+        1   --- EDGE_STEP
+        ) AS t(i)
+),
+arcsEdge (sx, sy,   mx, my,   ex, ey) AS (
+    SELECT 10*i + 5, 0,   10*i + 10, -5,   10*i + 15,0   FROM ordEdge
     UNION
-    SELECT 0, 10*i + 5,   -5, 10*i + 10,   0, 10*i + 15
-        FROM generate_series(0, 19, 1) AS t(i)
+    SELECT 0, 10*i + 5,   -5, 10*i + 10,   0, 10*i + 15  FROM ordEdge
     UNION
-    SELECT 10*i + 5, 200,   10*i + 10, 205,   10*i + 15,200
-        FROM generate_series(0, 19, 1) AS t(i)
+    SELECT 10*i + 5, 200,   10*i + 10, 205,   10*i + 15,200  FROM ordEdge
     UNION
-    SELECT 200, 10*i + 5,   205, 10*i + 10,   200, 10*i + 15
-        FROM generate_series(0, 19, 1) AS t(i)
+    SELECT 200, 10*i + 5,   205, 10*i + 10,   200, 10*i + 15  FROM ordEdge
 ),
 arcsAll AS (
     SELECT * FROM arcs
-    UNION SELECT * FROM arcsClosing
+    UNION SELECT * FROM arcsEdge
 ),
 wkt( wkt )  AS (
     SELECT
@@ -61,6 +62,7 @@ curve( geom ) AS (
 ),
 data( geom ) AS (
     SELECT (ST_Dump (
+        -- EDGE_STEP =  BuildArea : 2;  Polygonize : 1
 --        ST_BuildArea( ST_Collect( geom ) )
         ST_Polygonize( geom )
          ) ).geom FROM curve
