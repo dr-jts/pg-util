@@ -1,5 +1,5 @@
 --========================================
--- Truchet tiling with merged polygonal Arcs
+-- Truchet tiling with Arcs merged into lines
 --========================================
 -- psql -A -t -o truchet-arc-line.svg  < truchet-arc-line-svg.sql
 
