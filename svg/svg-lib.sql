@@ -324,3 +324,24 @@ BEGIN
 END;
 $$
 LANGUAGE 'plpgsql' VOLATILE STRICT;
+
+----------------------------------------
+-- Function: svgRandInt
+-- Returns a random integer in a range
+-- Parameters:
+-- lo : low value in range (inclusive)
+-- hi : highest value in range (inclusive)
+----------------------------------------
+CREATE OR REPLACE FUNCTION svgRandPick(
+  VARIADIC pick integer[]
+)
+RETURNS integer AS
+$$
+DECLARE
+  i integer;
+BEGIN
+  i := floor(random() * array_length( pick, 1) ) + 1;
+  RETURN pick[i];
+END;
+$$
+LANGUAGE 'plpgsql' VOLATILE STRICT;
