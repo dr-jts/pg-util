@@ -91,22 +91,8 @@ DECLARE
   gcomp geometry;
   outstr text;
 BEGIN
- classAttr := '';
- IF class <> '' THEN
-  classAttr :=  (' class="' || class || '"');
- END IF;
 
- idAttr := '';
- IF id <> '' THEN
-  idAttr := ' id="' || id || '"';
- END IF;
-
- styleAttr := '';
- IF style <> '' THEN
-  styleAttr := ' style="' || style || '"';
- END IF;
-
- attrs := classAttr || idAttr || styleAttr || attr;
+ attrs := _svgAttr( class, id, style, attr);
  geom_dump := ARRAY( SELECT (ST_Dump( geom )).geom );
 
  isGrp := array_length( geom_dump,1 ) > 1;
@@ -183,12 +169,44 @@ $$
 DECLARE
   svg_poly text;
   svg_pts text;
-  fillrule text;
   classAttr text;
   idAttr text;
   styleAttr text;
   attrs text;
   sep text;
+BEGIN
+
+  svg_pts := '';
+  FOR i IN 1..array_length( pts, 1 ) LOOP
+    sep := CASE i % 2 WHEN 0 THEN ' ' ELSE ',' END;
+    svg_pts := svg_pts || pts[i] || sep;
+  END LOOP;
+
+  svg_poly := '<polygon '
+    || _svgAttr( class, id, style, attr)
+    || ' points="' || svg_pts || '" />';
+
+  RETURN svg_poly;
+END;
+$$
+LANGUAGE 'plpgsql' IMMUTABLE STRICT;
+
+----------------------------------------
+-- Function: _svgAttr
+----------------------------------------
+CREATE OR REPLACE FUNCTION _svgAttr(
+  class text DEFAULT '',
+  id text DEFAULT '',
+  style text DEFAULT '',
+  attr text DEFAULT ''
+)
+RETURNS text AS
+$$
+DECLARE
+  classAttr text;
+  idAttr text;
+  styleAttr text;
+  attrs text;
 BEGIN
   classAttr := '';
   IF class <> '' THEN
@@ -207,16 +225,7 @@ BEGIN
 
   attrs := classAttr || idAttr || styleAttr || attr;
 
-  svg_pts := '';
-  FOR i IN 1..array_length( pts, 1 ) LOOP
-    sep := CASE i % 2 WHEN 0 THEN ' ' ELSE ',' END;
-    svg_pts := svg_pts || pts[i] || sep;
-  END LOOP;
-
-  svg_poly := '<polygon ' || attrs
-     || ' points="' || svg_pts || '" />';
-
-  RETURN svg_poly;
+  RETURN attrs;
 END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
