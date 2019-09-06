@@ -71,7 +71,7 @@ shapes AS (
   SELECT geom, svgShape( geom,
         title => 'Truchet tiling',
         style => svgStyle( 'fill',
-            svgHSL( svgRandInt(120, 180),
+            svgHSL( svgRandPick( svgRandInt(160, 200), svgRandInt(270, 300) ),
                     svgRandInt(70, 100),
                     svgRandInt(20, 60) )
              ,'stroke', '#ffffff', 'stroke-width', '1.5'
@@ -79,5 +79,5 @@ shapes AS (
     ) svg FROM data
 )
 SELECT svgDoc( array_agg( svg ),
-  viewbox => svgViewbox( ST_Expand( ST_Extent(geom), 5 ))
+            svgViewbox( ST_Expand( ST_Extent(geom), 5 ))
   ) AS svg FROM shapes;

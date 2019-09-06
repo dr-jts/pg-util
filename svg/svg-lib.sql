@@ -11,7 +11,6 @@
 CREATE OR REPLACE FUNCTION svgDoc(
   content text[],
   viewbox text DEFAULT '0 0 100 100',
-  extent geometry DEFAULT null,
   width integer DEFAULT -1,
   height integer DEFAULT -1,
   style text DEFAULT ''
@@ -19,7 +18,6 @@ CREATE OR REPLACE FUNCTION svgDoc(
 RETURNS text AS
 $$
 DECLARE
-  vbData text;
   viewBoxAttr text;
   styleAttr text;
   widthAttr text;
@@ -28,13 +26,8 @@ DECLARE
   xSize real;
   ySize real;
 BEGIN
-  vbData := viewbox;
-  IF extent IS NOT NULL THEN
-    xSize := ST_XMax(extent) - ST_XMin(extent);
-    ySize := ST_YMax(extent) - ST_YMin(extent);
-    vbData := ST_XMin(extent) || ' ' || -ST_YMax(extent) || ' ' || xSize || ' ' || ySize;
-  END IF;
-  viewBoxAttr := 'viewBox="' || vbData || '" ';
+  viewBoxAttr := 'viewBox="' || viewbox || '" ';
+
   styleAttr := '';
   IF style <> '' THEN
     styleAttr := ' style="' || style || '" ';

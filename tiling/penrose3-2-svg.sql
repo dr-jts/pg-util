@@ -122,6 +122,6 @@ SELECT svgDoc( array_agg(
 			style => svgStyle( 'stroke', 'white', 'stroke-width', '1',
 				'fill', clr )
 		) ),
-  		viewBox => '-110 -120 220 240'
+  		'-110 -120 220 240'
   	) AS svg
   FROM tiling;

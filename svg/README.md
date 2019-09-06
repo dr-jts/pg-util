@@ -18,19 +18,30 @@ psql < ../svg-lib.sql
 Creates an SVG doc element from an array of content elements.
 
 * `content` - an array of strings output as the content of the `<svg>` element
-* `extent` - a `geometry` providing the bounding box of the geometries being output.
-    Used to construct the SVG `viewbox` attribute.
+* `viewbox` - (opt) value of SVG viewBox attribute ( x y width height )
 * `width` (opt) - width of view
 * `height` (opt) - height of view
-* `style` (opt) - specifies CSS styling at the document level (see `SVGStyle` function)
+* `style` (opt) - specifies CSS styling at the document level (see `svgStyle` function)
 
 ### svgViewbox
 
-Returns an SVG viewBox value determine from the envelope of a geometry.
+Returns an SVG `viewBox` attribute value determined from the envelope of a geometry.
+The PostGIS `ST_Extent` aggregate function can be use to determine the overall
+envelope of the geometries being encoded.
+
+* `extent` - (opt) a `geometry` providing the envelope to encode.
 
 ### svgShape
 
 Encodes a PostGIS geometry as an SVG shape.
+
+*  `geom` - geometry to encode
+*  `class` - (opt) class attribute
+*  `id` - (opt) id attribute
+*  `style` - (opt) style attribute value
+*  `attr` - (opt) additional attributes
+*  `title` - (opt) title
+
 
 ### svgPolygon
 
