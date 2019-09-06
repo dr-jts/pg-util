@@ -13,7 +13,7 @@ psql < ../svg-lib.sql
 
 ## Functions
 
-### SVGDoc
+### svgDoc
 
 Creates an SVG doc element from an array of content elements.
 
@@ -23,3 +23,31 @@ Creates an SVG doc element from an array of content elements.
 * `width` (opt) - width of view
 * `height` (opt) - height of view
 * `style` (opt) - specifies CSS styling at the document level (see `SVGStyle` function)
+
+### svgViewbox
+
+Returns an SVG viewBox value determine from the envelope of a geometry.
+
+### svgShape
+
+Encodes a PostGIS geometry as an SVG shape.
+
+### svgPolygon
+
+Encodes an array of ordinates as an SVG polygon.
+
+### svgStyle
+
+Encodes an array of name,value pairs as a string of SVG CSS name:value; properties
+
+### svgHSL
+
+Encodes H,S,L values a CSS HSL function
+
+### svgRandInt
+
+Returns a random integer from a range [lo, hi] (inclusive)
+
+### svgRandPick
+
+Returns a random item from an array of integers

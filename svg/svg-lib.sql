@@ -355,11 +355,10 @@ $$
 LANGUAGE 'plpgsql' VOLATILE STRICT;
 
 ----------------------------------------
--- Function: svgRandInt
--- Returns a random integer in a range
+-- Function: svgRandPick
+-- Returns a random value from an array of ints
 -- Parameters:
--- lo : low value in range (inclusive)
--- hi : highest value in range (inclusive)
+-- pick[] : array of values
 ----------------------------------------
 CREATE OR REPLACE FUNCTION svgRandPick(
   VARIADIC pick integer[]
