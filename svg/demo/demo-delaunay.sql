@@ -2,6 +2,7 @@
 -- Demo of using SVG functions to display PostGIS Delaunay Triangulation
 -- Author: Martin Davis  2019
 ------------------------------------------------------------------
+-- psql -A -t -o delaunay.svg  < demo-delaunay.sql
 
 WITH input AS (
   SELECT 'MULTIPOINT ((50 50), (50 120), (100 100), (130 70), (130 150), (70 160), (160 110), (70 80))'::geometry geom
@@ -24,5 +25,5 @@ shapes AS (
     svg FROM input
 )
 SELECT svgDoc( array_agg( svg ),
-  ST_Expand( ST_Extent(geom), 5)
+    viewbox => svgViewbox( ST_Expand( ST_Extent(geom), 5) )
   ) AS svg FROM shapes;

@@ -10,7 +10,8 @@
 ----------------------------------------
 CREATE OR REPLACE FUNCTION svgDoc(
   content text[],
-  extent geometry,
+  viewbox text DEFAULT '0 0 100 100',
+  extent geometry DEFAULT null,
   width integer DEFAULT -1,
   height integer DEFAULT -1,
   style text DEFAULT ''
@@ -19,7 +20,7 @@ RETURNS text AS
 $$
 DECLARE
   vbData text;
-  viewBox text;
+  viewBoxAttr text;
   styleAttr text;
   widthAttr text;
   heightAttr text;
@@ -27,11 +28,13 @@ DECLARE
   xSize real;
   ySize real;
 BEGIN
-  xSize = ST_XMax(extent) - ST_XMin(extent);
-  ySize = ST_YMax(extent) - ST_YMin(extent);
-  vbData := ST_XMin(extent) || ' ' || -ST_YMax(extent) || ' ' || xSize || ' ' || ySize;
-  viewBox := 'viewBox="' || vbData || '" ';
-
+  vbData := viewbox;
+  IF extent IS NOT NULL THEN
+    xSize := ST_XMax(extent) - ST_XMin(extent);
+    ySize := ST_YMax(extent) - ST_YMin(extent);
+    vbData := ST_XMin(extent) || ' ' || -ST_YMax(extent) || ' ' || xSize || ' ' || ySize;
+  END IF;
+  viewBoxAttr := 'viewBox="' || vbData || '" ';
   styleAttr := '';
   IF style <> '' THEN
     styleAttr := ' style="' || style || '" ';
@@ -48,7 +51,8 @@ BEGIN
   END IF;
 
   svg := '<svg ' || widthAttr || heightAttr
-    || viewBox || styleAttr || 'xmlns="http://www.w3.org/2000/svg">' || E'\n';
+    || viewBoxAttr
+    || styleAttr || 'xmlns="http://www.w3.org/2000/svg">' || E'\n';
 
   FOR i IN 1..array_length( content, 1) LOOP
     svg := svg || content[i] || E'\n';
@@ -58,8 +62,32 @@ BEGIN
   RETURN svg;
 END;
 $$
-LANGUAGE 'plpgsql' IMMUTABLE STRICT;
+LANGUAGE 'plpgsql' IMMUTABLE;
 
+----------------------------------------
+-- Function: svgViewbox
+-- Determines the SVG viewbox attribute value
+-- from a geometry giving the extent of a set of geometries.
+-- Parameters:
+-- extent : extent geometry
+----------------------------------------
+CREATE OR REPLACE FUNCTION svgViewbox(
+  extent geometry
+)
+RETURNS text AS
+$$
+DECLARE
+  w float8;
+  h float8;
+  vbData text;
+BEGIN
+  w = ST_XMax(extent) - ST_XMin(extent);
+  h = ST_YMax(extent) - ST_YMin(extent);
+  vbData := ST_XMin(extent) || ' ' || -ST_YMax(extent) || ' ' || w || ' ' || h;
+  RETURN vbData;
+END;
+$$
+LANGUAGE 'plpgsql' IMMUTABLE STRICT;
 
 ----------------------------------------
 -- Function: svgShape
@@ -284,6 +312,7 @@ BEGIN
 END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT;
+
 
 ----------------------------------------
 -- Function: svgHSL

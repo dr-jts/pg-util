@@ -40,7 +40,7 @@ svg AS (
     FROM hilbert
 )
 SELECT svgDoc( array_agg( svg ),
-    ST_Expand( ST_Extent(geom), 5),
+    viewbox => svgViewbox( ST_Expand( ST_Extent(geom), 5 )),
     style => svgStyle('stroke-width', 0.5::text,
         'stroke-linecap', 'round' ) ) AS svg
   FROM svg;

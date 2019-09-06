@@ -49,7 +49,6 @@ shapes AS (
             'stroke-width', '3' )
     ) svg FROM data
 )
---SELECT geom FROM data;
 SELECT svgDoc( array_agg( svg ),
-  ST_Expand( ST_Extent(geom), 5)
+  viewbox => svgViewbox( ST_Expand( ST_Extent(geom), 5 ))
   ) AS svg FROM shapes;

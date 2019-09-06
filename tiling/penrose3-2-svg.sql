@@ -122,6 +122,6 @@ SELECT svgDoc( array_agg(
 			style => svgStyle( 'stroke', 'white', 'stroke-width', '1',
 				'fill', clr )
 		) ),
-  		ST_Expand( 'LINESTRING( -110 -120, 110 110)'::geometry, 5)
+  		viewBox => '-110 -120 220 240'
   	) AS svg
   FROM tiling;
