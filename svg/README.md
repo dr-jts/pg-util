@@ -49,7 +49,7 @@ Encodes an array of ordinates as an SVG polygon.
 
 ### svgStyle
 
-Encodes an array of name,value pairs as a string of SVG CSS name:value; properties
+Encodes an array of name,value pairs as a string of SVG CSS `name: value;` properties
 
 ### svgHSL
 
