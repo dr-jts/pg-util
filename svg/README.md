@@ -51,6 +51,25 @@ Encodes an array of ordinates as an SVG polygon.
 
 Encodes an array of name,value pairs as a string of SVG CSS `name: value;` properties
 
+* `param ...` - list of name/value pairs
+
+Common styling CSS properties are given below,
+or see full list [here](https://www.w3.org/TR/SVG/propidx.html).
+
+* `fill` - fill color
+* `fill-opacity` - opacity of fill; value in [ 0,1 ]
+* `stroke` - line color
+* `stroke-dasharray` - dashed line specifier, e.g. `2,4,1,4`
+* `stroke-dashoffset` - offset of dashes
+* `stroke-width` - line width
+* `fill-opacity` - opacity of stroke; value in [ 0,1 ]
+
+CSS colour specifiers include:
+
+* `#RGGBB`,
+* `colorname`
+* `hsl(h,sl)` - can use the `svgHSL` function for this
+
 ### svgHSL
 
 Encodes H,S,L values a CSS HSL function
