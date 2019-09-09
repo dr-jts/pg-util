@@ -7,6 +7,8 @@
 --   id divisor hsl function
 -- ---------------------------------
 
+-- psql -A -t -o hilbert-curve.svg  < hilbert-curve-svg.sql
+
 WITH RECURSIVE
 lsystem AS ( iter, state )
   SELECT 0 AS iter, 'A' AS state

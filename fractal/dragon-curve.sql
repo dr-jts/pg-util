@@ -3,6 +3,8 @@
 -- Parameter: iter - # of iterations
 -- ---------------------------------
 
+-- psql -A -t -o dragon.wkt  < dragon-curve.sql
+
 WITH RECURSIVE
 lsystem( iter, state ) AS (
   SELECT 0 AS iter, 'FX' AS state
