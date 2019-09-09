@@ -3,7 +3,7 @@
 -- Parameter: iter - # of iterations
 -- ---------------------------------
 
--- psql -A -t -o dragon.wkt  < dragon-curve.sql
+-- psql -A -t -o dragon-curve.wkt  < dragon-curve.sql
 
 WITH RECURSIVE
 lsystem( iter, state ) AS (
