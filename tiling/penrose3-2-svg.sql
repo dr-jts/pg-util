@@ -12,8 +12,7 @@
 -- psql -A -t -o penrose3-2.svg  < penrose3-2-svg.sql
 
 WITH RECURSIVE
-init(type, ax,ay, bx,by, cx,cy) AS (
-	SELECT * FROM (VALUES
+init(type, ax,ay, bx,by, cx,cy) AS (VALUES
 		( 'S',
 			100::float8, 0::float8,
 			0::float8, 0::float8,
@@ -38,7 +37,7 @@ init(type, ax,ay, bx,by, cx,cy) AS (
 			100 * cos( 4 * pi() / 5 ), 100 * sin( 4 * pi() / 5 ),
 			0::float8, 0::float8,
 			-100::float8, 0::float8
-		) ) AS t (type, ax,ay, bx,by, cx,cy)
+		)
 ),
 tri(i, type,  ax,ay, bx,by, cx,cy, psi, psi2) AS (
 	SELECT 0, *,
