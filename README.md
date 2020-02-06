@@ -5,7 +5,6 @@ Utilities for PostGIS and Postgres
 
 SQL queries to generate various kinds of fractals as PostGIS geometries, and output them to various spatial data formats such as SVG, WKT, GeoJSON
 
-## SVG
+## Other Resources
 
-A set of SQL functions to convert PostGIS geometry to SVG markup.
-
+* [pg_svg](https://github.com/dr-jts/pg_svg) - A set of SQL functions to convert PostGIS geometry to SVG markup.
