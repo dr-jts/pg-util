@@ -20,4 +20,18 @@ Or in psql:
 DROP FUNCTION name(args, ...);
 ```
 
+### Kill a query process
+
+* Identify the PID of the query to terminate:
+```
+SELECT * FROM pg_stat_activity WHERE state = 'active'; 
+```
+* Kill it softly
+```
+SELECT pg_cancel_backend(PID);  
+```
+* Kill it hard:
+```
+SELECT pg_terminate_backend(PID);
+```
 
