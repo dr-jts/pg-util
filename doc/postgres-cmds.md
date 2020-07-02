@@ -24,7 +24,7 @@ DROP FUNCTION name(args, ...);
 
 * Identify the PID of the query to terminate:
 ```
-SELECT * FROM pg_stat_activity WHERE state = 'active'; 
+SELECT pid, query FROM pg_stat_activity WHERE state = 'active'; 
 ```
 * Kill it softly
 ```
