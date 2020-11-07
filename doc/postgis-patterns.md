@@ -9,7 +9,7 @@ https://gis.stackexchange.com/questions/354319/how-to-extract-attributes-of-poly
 
 Solution
 A simple query to do this is:
-```
+```sql
 SELECT pt.id, poly.*
   FROM grid pt
   JOIN polygons poly ON ST_Intersects(poly.geom, pt.geom);
