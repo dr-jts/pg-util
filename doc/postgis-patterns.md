@@ -25,7 +25,7 @@ SELECT pt.id, poly.*
 
 ### Count kinds of Points in Polygons
 https://gis.stackexchange.com/questions/356976/postgis-count-number-of-points-by-name-within-distinct-polygons
-
+```
 SELECT
   polyname,
   count(pid) FILTER (WHERE pid='w') AS "w",
@@ -34,7 +34,8 @@ SELECT
   count(pid) FILTER (WHERE pid='z') AS "z"
 FROM polygons
     LEFT JOIN points ON st_intersects(points.geom, polygons.geom)
-GROUP BY polyname
+GROUP BY polyname;
+```
 ### Optimizing Point-in-Polygon query
 https://gis.stackexchange.com/questions/83615/optimizing-st-within-query-to-count-lightning-occurrences-inside-country
 
@@ -42,17 +43,16 @@ https://gis.stackexchange.com/questions/83615/optimizing-st-within-query-to-coun
 https://gis.stackexchange.com/questions/220313/point-within-a-polygon-within-another-polygon
 #### Solution
 Choose containing polygon with smallest area 
-
+```
 SELECT DISTINCT ON (compequip.id), compequip.*, a.*
 FROM compequip
 LEFT JOIN a
 ON ST_within(compequip.geom, a.geom)
 ORDER BY compequip.id, ST_Area(a.geom)
-
+```
 ### Finding points NOT in Polygons
 https://gis.stackexchange.com/questions/139880/postgis-st-within-or-st-disjoint-performance-issues?rq=1
 
-Also these:
 https://gis.stackexchange.com/questions/26156/updating-attribute-values-of-points-outside-area-using-postgis
 
 https://gis.stackexchange.com/questions/313517/postgresql-postgis-spatial-join-but-keep-all-features-that-dont-intersect?rq=1
@@ -70,24 +70,26 @@ polyobstacles (polygon layer)
 the point layer has obstacles all over the map
 the polygon layer has some polygons containing some of the obstacle points.
 
-I would like to select the highest obstacle in each polygon. If there is several points with the same highest height a random obstacle of those highest shall be selected.
+Select the highest obstacle in each polygon. If there is several points with the same highest height a random obstacle of those highest shall be selected.
 
 Solution - JOIN LATERAL
+```
 SELECT poly.id, obs_max.*
 FROM polyobstacle poly 
 JOIN LATERAL (SELECT * FROM obstacles o
   WHERE ST_Contains(poly.geom, o.geom) 
  ORDER BY height_m LIMIT 1
   ) AS obs_max ON true;
-
+```
 #### Solution - DISTINCT ON
 Do a spatial join between polygon and points and start you query with DISTINCT ON (poly.id) poly.id, o.height etc.
 
 #### Solution - ARRAY_AGG
+```
 select p.id, (array_agg(o.id order by height_m))[1] as heighest_id
 from polyobstacles p join obstacles o on st_contains(p.geom, o.geom)
 group by p.id;
-
+```
 ### Find polygon containing point
 Basic query - with tables of address points and US census blocks, find state for each point
 Discusses required indexes, and external parallelization
@@ -95,7 +97,7 @@ https://lists.osgeo.org/pipermail/postgis-users/2020-May/044161.html
 
 ### Count Points in Polygons with two Point tables
 https://gis.stackexchange.com/questions/377741/find-count-of-multiple-tables-that-st-intersect-a-main-table
-
+```
 SELECT  ply.polyname, SUM(pnt1.cnt) AS pointtable1count, SUM(pnt2.cnt) AS pointtable2count
 FROM    polytable AS ply,
         LATERAL (
@@ -109,41 +111,41 @@ FROM    polytable AS ply,
           WHERE  ST_Intersects(ply.geom, pt.geom)
         ) AS pnt2
 GROUP BY 1;
-
+```
 ## Query - Lines
-Find lines which have a given angle of incidence
+### Find lines which have a given angle of incidence
 https://gis.stackexchange.com/questions/134244/query-road-shape?noredirect=1&lq=1
 
-Find Line Intersections
+### Find Line Intersections
 https://gis.stackexchange.com/questions/20835/identifying-road-intersections-using-postgis?rq=1
 
-Find Lines which intersect N Polygons
+### Find Lines which intersect N Polygons
 https://gis.stackexchange.com/questions/349994/st-intersects-with-multiple-geometries
 
 Solution
 Straightforward and nice application of counting using HAVING clause
 SQL given is not general but should generalize easily
-
+```
 SELECT lines.id, lines.geom 
 FROM lines
  JOIN polygons ON st_intersects(lines.geom,polygons.geom)
 WHERE polygons.id in (1,2)
 GROUP BY lines.id, lines.geom 
 HAVING count(*) = 2;
-
-Count number of intersections between line segments
+```
+### Count number of intersections between line segments
 https://gis.stackexchange.com/questions/365575/counting-geometry-intersections-between-two-linestrings
-Find Begin/End of circular sublines
+### Find Begin/End of circular sublines
 https://gis.stackexchange.com/questions/206815/seeking-algorithm-to-detect-circling-and-beginning-and-end-of-circle
 
-Find Longest Line Segment
+### Find Longest Line Segment
 https://gis.stackexchange.com/questions/359825/get-the-maximum-distance-between-two-consecutive-points-in-a-linestring
 
-Find non-monotonic Z ordinates in a LineString
+### Find non-monotonic Z ordinates in a LineString
 https://gis.stackexchange.com/questions/374459/postgis-validate-the-z-continuity
 
 Assuming the LineStrings are digitized in the correct order (start point is most elevated), running
-
+```
 SELECT ln_id,
        vtx_id,
        geom
@@ -155,44 +157,42 @@ FROM   (
   FROM   <lines> AS ln,
          LATERAL ST_DumpPoints(ln.geom) AS dmp
 ) q
-WHERE NOT is_valid
-;
+WHERE NOT is_valid;
+```
 returns all vertices geom, their respective line <id>, and their position in the vertices array of that line, for all vertices with higher Z value as their predecessor.
-Query - Polygons
-Find polygons intersecting other table of polygons using ST_Subdivide
+## Query - Polygons
+### Find polygons intersecting other table of polygons using ST_Subdivide
 https://gis.stackexchange.com/questions/224138/postgis-st-intersects-vs-arcgis-select-by-location
-Query - Intersection
-Find geometries in a table which do NOT intersect another table
+## Query - Intersection
+### Find geometries in a table which do NOT intersect another table
 https://gis.stackexchange.com/questions/162651/looking-for-boolean-intersection-of-small-table-with-huge-table
 
 Use NOT EXISTS:
-
+```
 SELECT * FROM polygons
 WHERE NOT EXISTS (SELECT 1 FROM streets WHERE ST_Intersects(polygons.geom, streets.geom))
-Query - Spatial Relationship
+## Query - Spatial Relationship
 
-
-
-Find Polygons not contained by other Polygons
+### Find Polygons not contained by other Polygons
 https://gis.stackexchange.com/questions/185308/find-polygons-that-does-not-contain-any-polygons-with-postgis?rq=1
 Solution
 Uses the LEFT JOIN on ST_Contains with NULL result pattern
 
-Find Polygons not contained by union of other Polygons
+### Find Polygons not contained by union of other Polygons
 https://gis.stackexchange.com/questions/313039/find-what-polygons-are-not-fully-covered-by-union-of-polygons-from-another-layer?rq=1
 
-FInd Polygons that are islands
+### FInd Polygons that are islands
 https://gis.stackexchange.com/questions/291824/determine-if-a-polygon-is-not-enclosed-by-other-polygons
 
 
-Find polygons not surrounded by other polygons in a coverage
+### Find polygons not surrounded by other polygons in a coverage
 https://gis.stackexchange.com/questions/291824/determine-if-a-polygon-is-not-enclosed-by-other-polygons
 
 Solution
 Find polygons with total length of intersection with others is less than length of boundary
 
 A couple of others as well.
-
+```
 SELECT a.id
 FROM my_data a 
 INNER JOIN my_data b ON (ST_Intersects(a.geom, b.geom) AND a.id != b.id) 
@@ -200,14 +200,15 @@ GROUP BY a.id
 HAVING 1e-6 > 
   abs(ST_Length(ST_ExteriorRing(a.geom)) - 
   sum(ST_Length(ST_Intersection(ST_Exteriorring(a.geom), ST_ExteriorRing(b.geom)))));
-
-Find Polygons covered by a set of other polygons
+```
+### Find Polygons covered by a set of other polygons
 https://gis.stackexchange.com/questions/212543/compare-row-to-all-others-in-postgis
 
 Solution
 For each polygon, compute union of polygons which intersect it, then test if the union covers the polygon
 
-Finding polygons which touch in a line
+### Find polygons which touch in a line
+```
 WITH 
 data(id, geom) AS (VALUES
     ( 1, 'POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))'::geometry ),
@@ -218,42 +219,42 @@ SELECT a.id, b.id,
     ST_Relate(a.geom, b.geom),
     ST_Relate(a.geom, b.geom, '****1****') AS is_line_touch
     FROM data a CROSS JOIN data b WHERE a.id < b.id;
-
-Test if Point is on a Line
+```
+### Test if Point is on a Line
 https://gis.stackexchange.com/questions/11510/st-closestpointline-point-does-not-intersect-line?rq=1
 
 Also https://gis.stackexchange.com/questions/350461/find-path-containing-point
 
-Find Start Points of Rivers and Headwater polygons
+### Find Start Points of Rivers and Headwater polygons
 https://gis.stackexchange.com/questions/131806/find-start-of-river?rq=1
 https://gis.stackexchange.com/questions/132266/find-headwater-polygons?noredirect=1&lq=1
 
 
-Find routes which terminate in Polygons but do not cross them
+### Find routes which terminate in Polygons but do not cross them
 https://gis.stackexchange.com/questions/254051/selecting-lines-with-start-and-end-points-inside-polygons-but-do-not-cross-them
 
 
-Find Lines that touch Polygon at both ends
+### Find Lines that touch Polygon at both ends
 https://gis.stackexchange.com/questions/299319/select-only-lines-that-touch-both-sides-of-polygon-postgis
 
-Find Lines that touch but do not cross Polygons
+### Find Lines that touch but do not cross Polygons
 https://gis.stackexchange.com/questions/160142/intersection-between-line-polygon-in-postgis
-
+```
 SELECT lines.geom
  FROM lines, polygons
  WHERE ST_Touches(lines.geom, polygons.geom) AND
                  NOT EXISTS (SELECT 1 FROM polygons p2 WHERE ST_Crosses(lines.geom, p2.geom));
-Determine hierarchy of a spatial coverage
+### Determine hierarchy of a spatial coverage
 https://gis.stackexchange.com/questions/343100/intersecting-polygons-to-build-boundary-hierearchy-using-postgis
 Problem
 Have a table of polygons which are known to form a hierarchical coverage, but coverage is not explicitly represented.
 Solution
 Should be straightforward.  Determine containing relationship based on interior points and areas. Then can use a recursive query on that to extract paths if needed. 
-Query - Spatial Statistics
-Count points which lie inside polygons
+## Query - Spatial Statistics
+### Count points which lie inside polygons
 Solution - LATERAL
 Good use case for JOIN LATERAL
-
+```
 SELECT bg.geoid, bg.geom,  bg.total_pop AS total_population, 
 bg.med_inc AS median_income,
        	t.numbirds
@@ -262,81 +263,85 @@ JOIN LATERAL
         (SELECT COUNT(1) as numbirds 
 FROM  bird_loc bl 
 WHERE ST_within(bl.loc, bg.geom)) AS t ON true;
-
+```
 Solution using GROUP BY
 Almost certainly less performant
-
+```
 SELECT bg.geoid, bg.geom, bg.total_pop, bg.med_inc, 
 COUNT(bl.global_unique_identifier) AS num_bird_counts
 FROM  bg_pop_income bg 
 LEFT OUTER JOIN bird_loc bl ON ST_Contains(bg.geom, bl.loc)
 GROUP BY bg.geoid, bg.geom, bg.total_pop, bg.med_inc;
-Count points from two tables which lie inside polygons
+```
+### Count points from two tables which lie inside polygons
 https://stackoverflow.com/questions/59989829/count-number-of-points-from-two-datasets-contained-by-neighbourhood-polygons-u
-Count polygons which lie within two layers of polygons
+### Count polygons which lie within two layers of polygons
 https://gis.stackexchange.com/questions/115881/how-many-a-features-that-fall-both-in-the-b-polygons-and-c-polygons-are-for-each
 
 Q is for ArcGIS; would be interesting to provide a PostGIS answer
 
-Find Median of values in a polygon neighbourhood
+### Find Median of values in a polygon neighbourhood
 https://gis.stackexchange.com/questions/349251/finding-median-of-polygons-that-share-boundaries
-Query total length of lines in a Polygon
+### Compute total length of lines in a Polygon
 https://gis.stackexchange.com/questions/143438/calculating-total-line-lengths-within-polygon
-Use the Index, Luke
+## Use the Index, Luke
 https://gis.stackexchange.com/questions/172266/improve-performance-of-a-postgis-st-dwithin-query?rq=1
 
 https://gis.stackexchange.com/questions/162651/looking-for-boolean-intersection-of-small-table-with-huge-table?rq=1
 
-Use ST_Intersects instead of ST_DIsjoint
+### Use ST_Intersects instead of ST_DIsjoint
 https://gis.stackexchange.com/questions/167945/delete-polygonal-features-in-one-layer-outside-polygon-feature-of-another-layer?noredirect=1&lq=1
 
-Spatial Predicate argument ordering important for indexing
+### Spatial Predicate argument ordering important for indexing
 https://gis.stackexchange.com/questions/209959/how-to-use-st-intersects-with-different-geometry-type
 
 This may be due to indexing being used for first ST_Intersects arg, but not second?
-Clustering on the Index
+### Clustering on the Index
 https://gis.stackexchange.com/questions/240721/postgis-performance-increase-with-cluster
 
-Use an Index
+### Use an Index
 https://gis.stackexchange.com/questions/237709/speeding-up-intersect-query-in-postgis
-Query - Distance
-Find points NOT within distance of lines
+### Query - Distance
+### Find points NOT within distance of lines
 https://gis.stackexchange.com/questions/356497/select-points-falling-outside-of-buffer-and-count
 https://gis.stackexchange.com/questions/367594/get-all-geom-points-that-are-more-than-3-meters-from-the-linestring-at-big-scal
 Solution 1: EXCEPT with DWithin (Fastest)
+```
 SELECT locations.geom FROM locations
 EXCEPT 
 SELECT locations.geom FROM ways
 JOIN locations
 ON ST_DWithin(   ways.linestring,    locations.geom,    3)
-
+```
 Solution 2: LEFT JOIN for non-NULL with DWithin
 2x SLOWER than #1
-
+```
 SELECT  inj.*
    FROM injuries inj 
    LEFT JOIN bike_routes br 
 ON ST_DWithin(inj.geom, br.geom, 15) 
    WHERE br.gid IS NULL
+```
 Solution 3: NOT EXISTS with DWithin
 Same performance as #2 ?
-
+```
 SELECT * 
 FROM injuries AS inj 
 WHERE NOT EXISTS 
 (SELECT 1 FROM bike_routes br
 WHERE ST_DWithin(br.geom, inj.geom, 15);
+```
 Solution 3: Buffer (Slow)
 Buffer line, union, then find all point not in buffer polygon
 
-Find Points which have no point within distance
+### Find Points which have no point within distance
 https://gis.stackexchange.com/questions/356663/postgis-finding-duplicate-label-within-a-radius
 
 (Note: question title is misleading, question is actually asking for points which do NOT have a nearby point)
 Solution
 Best way is to use NOT EXISTS.
 To select only records that have no other point with the same value within <threshold> distance:
-
+```
 SELECT  *
 FROM    points AS a
 WHERE   NOT EXISTS (
@@ -344,49 +349,49 @@ WHERE   NOT EXISTS (
     FROM    points
     WHERE   a.cat = cat AND a.id <> id AND ST_DWithin(a.geom, geom, <threshold_in_CRS_units>)
 );
+```
 
 
-
-Find geometries close to centre of an extent
+### Find geometries close to centre of an extent
 https://stackoverflow.com/questions/60218993/postgis-how-do-i-find-results-within-a-given-bounding-box-that-are-close-to-the
-Find Furthest Point from a Polygon
+### Find Farthest Point from a Polygon
 https://gis.stackexchange.com/questions/332073/is-there-any-function-that-can-calculate-the-maximum-minimum-distance-from-a-geo/334260#334260
 
-Find furthest vertex from polygon centroid
+### Find farthest vertex from polygon centroid
 https://stackoverflow.com/questions/31497071/farthest-distance-of-a-polygon-point-from-its-centroid?rq=1
-Remove Duplicate Points within given Distance
+### Remove Duplicate Points within given Distance
 https://gis.stackexchange.com/questions/24818/remove-duplicate-points-based-on-a-specified-distance?rq=1
-Find Distance and Bearing from Point to Polygon
+### Find Distance and Bearing from Point to Polygon
 https://gis.stackexchange.com/questions/27564/how-to-get-distance-bearing-between-a-point-and-the-nearest-part-of-a-polygon?rq=1
 
 
-Use DWithin instead of Buffer
+### Use DWithin instead of Buffer
 https://gis.stackexchange.com/questions/297317/st-intersects-returns-true-while-st-contains-returns-false-for-a-point-located-o
 
-Find closest point on boundary of a union of polygons
+### Find closest point on boundary of a union of polygons
 https://gis.stackexchange.com/questions/124158/finding-outermost-border-of-set-of-geomertries-circles-using-postgis
 
-Find points returned by function within elliptical area
+### Find points returned by function within elliptical area
 https://gis.stackexchange.com/questions/17857/finding-points-within-elliptical-area-using-postgis?rq=1
 
-Query Point with highest elevation along a transect through a point cloud
+### Query Point with highest elevation along a transect through a point cloud
 https://gis.stackexchange.com/questions/223154/find-highest-elevation-along-path
-Query a single point within a given distance of a road
+### Query a single point within a given distance of a road
 https://gis.stackexchange.com/questions/361179/postgres-remove-duplicate-rows-returned-by-st-dwithin-query
 
-Spatial Predicates
-Test if two 3D geometries are equal
+## Spatial Predicates
+### Test if two 3D geometries are equal
 https://gis.stackexchange.com/questions/373978/how-to-check-two-3d-geometry-are-equal-in-postgis/373980#373980
-Query - KNN
-Nearest Point to each point in same table
+## Query - KNN
+### Nearest Point to each point in same table
 https://gis.stackexchange.com/questions/287774/nearest-neighbor
 
-Nearest Point to each point in different table
+### Nearest Point to each point in different table
 https://gis.stackexchange.com/questions/340192/calculating-distance-between-every-entry-in-table-a-and-nearest-record-in-table
 
 https://gis.stackexchange.com/questions/297208/efficient-way-to-find-nearest-feature-between-huge-postgres-tables
 Very thorough explanation, including difference between geom and geog
-
+```
 SELECT g1.gid AS gref_gid,
        g2.gid AS gnn_gid,
        g2.code_mun,
@@ -405,36 +410,34 @@ JOIN LATERAL (
   LIMIT 1
 ) AS g2
 ON true;
-
+```
 https://gis.stackexchange.com/questions/136403/postgis-nearest-points-with-st-distance-knn
 Lots of obsolete options, dbastons answer is best
 
-Snap Points to closest Point on Line
+### Snap Points to closest Point on Line
 https://gis.stackexchange.com/questions/279387/automatically-snapping-points-to-closest-part-of-line
-Find Shortest Line from Points to Roads (KNN, LATERAL)
+### Find Shortest Line from Points to Roads (KNN, LATERAL)
 https://gis.stackexchange.com/questions/332019/distinct-st-shortestline
 
 https://gis.stackexchange.com/questions/283794/get-barrier-edge-id
 
-Matching points to nearest Line Segments
+### Matching points to nearest Line Segments
 https://gis.stackexchange.com/questions/296445/get-closest-road-segment-to-segmentized-linestring-points
-Using KNN with JOIN LATERAL
+### Using KNN with JOIN LATERAL
 http://www.postgresonline.com/journal/archives/306-KNN-GIST-with-a-Lateral-twist-Coming-soon-to-a-database-near-you.html
 
 https://gis.stackexchange.com/questions/207592/postgis-osm-faster-query-to-find-nearest-line-of-points?rq=
 
-
 https://gis.stackexchange.com/questions/278357/how-to-update-with-lateral-nearest-neighbour-query
 https://gis.stackexchange.com/questions/338312/find-closest-polygon-from-point-and-get-its-attributes
 
-
 https://carto.com/blog/lateral-joins/
-Compute point value as average of N nearest points
+### Compute point value as average of N nearest points
 https://gis.stackexchange.com/questions/349754/calculate-average-of-the-temperature-value-from-4-surrounded-points-in-postgis
 
 Solution
 Uses LATERAL and KNN <->
-
+```
 SELECT a.id,
        a.geom,
        avg(c.temp_val) temp_val
@@ -445,13 +448,13 @@ CROSS JOIN LATERAL
    ORDER BY b.geom <-> a.geom
    LIMIT 4) AS c
 GROUP BY a.id,a.geom
-
-Query Nearest Neighbours having record in temporal join table 
+```
+### Query Nearest Neighbours having record in temporal join table 
 https://gis.stackexchange.com/questions/357237/find-knn-having-reference-in-a-table
 
-Snapping Points to Nearest Line
+### Snapping Points to Nearest Line
 https://gis.stackexchange.com/questions/365070/update-points-geometry-in-postgis-database-snapping-them-to-nearest-line
-
+```
 UPDATE points
   SET  geom = (
     SELECT ST_ClosestPoint(lines.geom, points.geom)
@@ -460,11 +463,13 @@ UPDATE points
     ORDER BY lines.geom <-> points.geom
     LIMIT 1
   );
-
-Find near polygons to line
+```
+### Find near polygons to line
 https://gis.stackexchange.com/questions/377674/find-nearest-polygons-of-a-multi-line-string
-Query - Shape
-Finding narrow polygons
+
+
+## Query - Geomemtric Shape
+### Find narrow polygons
 https://gis.stackexchange.com/questions/316128/identifying-long-and-narrow-polygons-in-with-postgis
 
 Solution 1 - Negative Buffer
@@ -474,18 +479,24 @@ Solution 2 - Thinness Ratio
 Use the Thinness Ratio:  TR(A,p) = A * 4 * pi / (p^2)
 
 See https://gis.stackexchange.com/questions/151939/explanation-of-the-thinness-ratio-formula
-Query - Invalid Geometries
+
+
+## Query - Invalid Geometries
 Skip invalid geometries when querying
 https://gis.stackexchange.com/questions/238748/compare-only-valid-polygon-geometries-in-postgis?rq=1
-Query - Relate
+
+
+## Query - Relate
 Finding LineStrings with Common Segments
 https://gis.stackexchange.com/questions/268147/find-linestrings-with-common-segments-in-postgis-2-3
 
-Query - Duplicates
-Find and Remove duplicate geometry rows
+## Query - Duplicates
+### Find and Remove duplicate geometry rows
 https://gis.stackexchange.com/questions/124583/delete-duplicate-geometry-in-postgis-tables
-Query - Tolerance / Robustness
-Predicates with Tolerance
+
+
+## Query - Tolerance / Robustness
+### Predicates with Tolerance
 Example: https://gis.stackexchange.com/questions/176359/tolerance-in-postgis
 
 This post is about needing ST_Equals to have a tolerance to accommodate small differences caused by reprojection
@@ -499,24 +510,24 @@ https://gis.stackexchange.com/questions/213240/st-equals-not-matching-with-exact
 
 https://gis.stackexchange.com/questions/176359/tolerance-in-postgis
 
-ST_ClosestPoint does not intersect Line
+### ST_ClosestPoint does not intersect Line
 https://gis.stackexchange.com/questions/11510/st-closestpointline-point-does-not-intersect-line?rq=1
 Solution
-Use ST_DWithin
+### Use ST_DWithin
 Discrepancy between GEOS predicates and PostGIS Intersects?
 https://gis.stackexchange.com/questions/259210/how-can-a-point-not-be-within-or-touch-but-still-intersect-a-polygon?rq=1
 
 Actually it doesn’t look like there is a discrepancy ATP.  But still a case where a distance tolerance might clarify things.
 
-Query - JOIN LATERAL
+## Query - JOIN LATERAL
 
 https://gis.stackexchange.com/questions/136403/postgis-nearest-points-with-st-distance-knn
 
 https://gis.stackexchange.com/questions/291941/select-points-with-maximum-attribute-value-per-category-on-a-spatial-join-with-p
 
-Union of Polygons does not Cover original Polygons
+### Union of Polygons does not Cover original Polygons
 https://gis.stackexchange.com/questions/376706/postgis-st-covers-doesnt-match-polygon-after-st-union
-
+```
 WITH data(id, pt) AS (VAlUES 
 ( 1, 'POINT ( 30.2833756 50.4419441) '::geometry )
 ,( 2, 'POINT( 30.2841370 50.4419441 ) '::geometry )
@@ -527,12 +538,12 @@ WITH data(id, pt) AS (VAlUES
 )
 SELECT * FROM poly;
 SELECT ST_Union( poly ) FROM poly;
+```
 
-
-Update / Delete
-Update a column by a spatial condition
+## Update / Delete
+### Update a column by a spatial condition
 https://gis.stackexchange.com/questions/364391/how-to-refer-to-another-table-in-a-case-when-statement-in-postgis
-
+``
 UPDATE table1
     SET column3 = (
       SELECT 
@@ -544,14 +555,14 @@ UPDATE table1
       WHERE ST_INTERSECTS(table1.geom, table2.geom)
      --LIMIT 1
 );
-
+``
 Is LIMIT 1 needed?
 
-Delete Lines Contained in Polygons
+### Delete Lines Contained in Polygons
 https://gis.stackexchange.com/questions/372549/delete-lines-within-polygon
 
 Use an EXISTS expression:
-
+```
 DELETE
 FROM   <lines> AS ln
 WHERE  EXISTS (
@@ -559,26 +570,29 @@ WHERE  EXISTS (
   FROM   <poly> AS pl
   WHERE  ST_Within(ln.geom, pl.geom)
 );
+```
 If the ST_Within check hits the first TRUE (selecting a truthy 1), the sub-query terminates for the current row (no matter if there were more than one hit).
 
 This is among the most efficient ways for when a table has to be traversed by row (as in an UPDATE/DELETE), or otherwise compared against a pre-selection (of e.g. ids).
 
 
-Geometry Creation
-Use ST_MakePoint or ST_PointFromText
+## Geometry Creation
+### Use ST_MakePoint or ST_PointFromText
 https://gis.stackexchange.com/questions/122247/st-makepoint-or-st-pointfromtext-to-generate-points?rq=1
 https://gis.stackexchange.com/questions/58605/which-function-for-creating-a-point-in-postgis/58630#58630
 
 Solutions
 ST_MakePoint is much faster
 
-Collect Lines into a MultiLine in a given order
+### Collect Lines into a MultiLine in a given order
 https://gis.stackexchange.com/questions/166701/postgis-merging-linestrings-into-multilinestrings-in-a-particular-order
-Geometry Editing
-Drop Holes from Polygons
+
+
+## Geometry Editing
+### Remove Holes from Polygons
 https://gis.stackexchange.com/questions/278154/polygons-have-holes-after-pgr-pointsaspolygon
 
-Drop Holes from MultiPolygons
+### Remove Holes from MultiPolygons
 https://gis.stackexchange.com/questions/348943/simplifying-a-multipolygon-into-one-polygon-respecting-its-outer-boundaries
 
 Solution
@@ -587,26 +601,31 @@ https://gis.stackexchange.com/a/349016/14766
 Similar
 https://gis.stackexchange.com/questions/291374/cut-out-polygons-that-at-least-partially-fall-in-another-polygon
 
-Select every Nth point from a LineString
+### Select every Nth point from a LineString
 https://stackoverflow.com/questions/60319473/postgis-how-do-i-select-every-second-point-from-linestring
-Constructions
-Construct polygons filling gaps in a coverage
+
+
+## Constructions
+### Construct polygons filling gaps in a coverage
 https://gis.stackexchange.com/questions/368406/postgis-create-new-polygons-in-between-existing
 
 Solution
+```
 SELECT ST_DIFFERENCE(foo.geom, bar.geom)
 FROM (SELECT ST_CONVEXHULL(ST_COLLECT(shape::geometry)) as geom FROM schema.polytable) as foo, 
 (SELECT ST_BUFFER(ST_UNION(shape),0.5) as geom FROM schema.polytable) as bar
-
+```
 To scale this up/out, you could process batches of polygons using a rectangular grid defined over the data space. The constructed gap polygons can be clipped to grid cells. and optional unioned afterwards
-Create ellipses in WGS84
+
+### Create ellipses in WGS84
 https://gis.stackexchange.com/questions/218159/postgis-ellipse-issue
-Create polygon joining two polygons
+
+### Create polygon joining two polygons
 https://gis.stackexchange.com/questions/352884/how-can-i-get-a-polygon-of-everything-between-two-polygons-in-postgis
 
 Solution
 Form convex hull of both, subtract convex hull of each, union with original polygons, remove holes.
-
+```
 WITH data(geom) AS (VALUES
 ( 'POLYGON ((100 300, 200 300, 200 200, 100 200, 100 300))'::geometry )
 ,( 'POLYGON ((50 150, 100 150, 100 100, 50 100, 50 150))'::geometry )
@@ -617,20 +636,22 @@ SELECT ST_MakePolygon(ST_ExteriorRing(ST_Union(
       ST_Union( ST_ConvexHull(geom))), 
   ST_Collect(geom))))
 FROM data;
-Noding
+```
+## Noding
 
-Node (Split) a table of lines by another table of lines
+### Node (Split) a table of lines by another table of lines
 https://lists.osgeo.org/pipermail/postgis-users/2019-September/043617.html
 
-Node a table of lines with itself
+### Node a table of lines with itself
 https://gis.stackexchange.com/questions/368996/intersecting-line-at-junction-in-postgresql
-Node a table of Lines by a Set of Points
+
+### Node a table of Lines by a Set of Points
 https://gis.stackexchange.com/questions/332213/split-lines-with-points-postgis
 
-Compute points of intersection for a LineString
+### Compute points of intersection for a LineString
 https://gis.stackexchange.com/questions/16347/is-there-a-postgis-function-for-determining-whether-a-linestring-intersects-itse
 
-Determine location of noding failures
+### Determine location of noding failures
 https://gis.stackexchange.com/questions/345341/get-location-of-postgis-geos-topology-exception
 
 Using ST_Node on set of linestrings produces an error with no indication of where the problem occurs.  Currently ST_Node uses IteratedNoder, which nodes up to 6 times, ahd fails if intersections are still found.  
@@ -639,51 +660,58 @@ Would be possible to report the nodes found in the last pass, which wouild indic
 
 Would be better to eliminate noding errors via snap-rounding, or some other kind of snapping
 
- Clipping Set of LineString by intersection points
+### Clipping Set of LineString by intersection points
 https://gis.stackexchange.com/questions/154833/cutting-linestrings-with-points
 
 Uses ST_Split_Multi from here: https://github.com/Remi-C/PPPP_utilities/blob/master/postgis/rc_split_multi.sql
 
-Construct locations where LineStrings self-intersect
+### Construct locations where LineStrings self-intersect
 https://gis.stackexchange.com/questions/367120/getting-st-issimple-reason-and-detail-similar-to-st-isvaliddetail-in-postgis
 
 Solution
 SQL to compute LineString self-intersetions is provided
-Polygonization
-Form Polygons from OSM streets
+
+
+## Polygonization
+### Form Polygons from OSM streets
 https://gis.stackexchange.com/questions/331529/split-streets-to-create-polygons
 
-Form polygons from a set of lines
+### Form polygons from a set of lines
 https://gis.stackexchange.com/questions/231237/making-linestrings-with-adjacent-lines-in-postgis?rq=1
 
-Polygonize a set of isolines with bounding box
+### Polygonize a set of isolines with bounding box
 https://gis.stackexchange.com/questions/127727/how-to-transform-isolines-to-isopolygons-with-postgis
 
-Find area enclosed by a set of lines
+### Find area enclosed by a set of lines
 https://gis.stackexchange.com/questions/373933/polygon-covered-by-the-intersection-of-multiple-linestrings-postgis/373983#373983
-Clipping
-Clipping Districts to Coastline
+
+
+## Clipping
+### Clip Districts to Coastline
 http://blog.cleverelephant.ca/2019/07/simple-sql-gis.html
 https://gis.stackexchange.com/questions/331887/unioning-a-set-of-intersections
 
-Clipping lines to a set of polygons
+### Clip lines to a set of polygons
 https://gis.stackexchange.com/questions/193217/st-difference-on-linestrings-and-polygons-slow-and-fails?rq=1
 
-Line Intersection
-Intersection of Lines which are not exactly coincident
+## Line Intersection
+### Intersection of Lines which are not exactly coincident
 https://stackoverflow.com/questions/60298412/wrong-result-using-st-intersection-with-postgis/60306404#60306404
-Line Merging
-Merge/Node Lines in a linear network
+
+
+## Line Merging
+### Merge/Node Lines in a linear network
 https://gis.stackexchange.com/questions/238329/how-to-break-multilinestring-into-constituent-linestrings-in-postgis
 Solution
 Use ST_Node, then ST_LineMerge
-Merge Lines while preserving direction
+
+### Merge Lines and preserve direction
 https://gis.stackexchange.com/questions/353565/how-to-join-linestrings-without-reversing-directions-in-postgis
 
 SOLUTION 1
 Use a recursive CTE to group contiguous lines so they can be merged
 
-
+```
 WITH RECURSIVE
 data AS (SELECT
 --'MULTILINESTRING((0 0, 1 1), (2 2, 1 1), (2 2, 3 3), (3 3, 4 4))'::geometry
@@ -703,7 +731,7 @@ data AS (SELECT
 SELECT ST_AsText( ST_LineMerge(ST_Collect(geom)) ) AS geom
   FROM paths
   GROUP BY startid;
-
+```
 
 SOLUTION 2
 ST_LIneMerge merges lines irrespective of direction.  
@@ -712,7 +740,7 @@ Perhaps a flag could be added to respect direction?
 See Also
 https://gis.stackexchange.com/questions/74119/a-linestring-merger-algorithm
 
-Merging lines to simplify a road network
+### Merging lines to simplify a road network
 Merge lines with common attributes at degree-2 nodes
 
 https://gis.stackexchange.com/questions/326433/st-linemerge-to-simplify-road-network?rq=1
