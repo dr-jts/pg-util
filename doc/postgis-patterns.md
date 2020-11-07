@@ -5,6 +5,17 @@ A collection of interesting PostGIS patterns / solutions / problems.
 ## Index
 * [Query - Point in Polygon](#query---point-in-polygon)
 * [Query - Lines](#query---lines)
+* [Query - Polygons](#query---polygons)
+* [Query - Intersection](#query---intersection)
+* [Query - Spatial Relationship](#query---intersection)
+* [Query - Spatial Statistics](#query---spatial-statistics)
+* [Query - Distance](#query---distance)
+* [Query - KNN](#query---knn)
+* [Query - Geometric Shape](#query---geometric-shape)
+* [Query - Invalid Geometry](#query---invalid-geometry)
+* [Query - Relate](#query---relate)
+* [Query - Duplicates](#query---duplicates)
+* [Query - JOIN LATERAL](#query---join-lateral)
 
 ## Query - Point in Polygon
 ### Find polygon containing points
@@ -56,7 +67,7 @@ LEFT JOIN a
 ON ST_within(compequip.geom, a.geom)
 ORDER BY compequip.id, ST_Area(a.geom)
 ```
-### Finding points NOT in Polygons
+### Find points NOT in Polygons
 https://gis.stackexchange.com/questions/139880/postgis-st-within-or-st-disjoint-performance-issues?rq=1
 
 https://gis.stackexchange.com/questions/26156/updating-attribute-values-of-points-outside-area-using-postgis
@@ -67,7 +78,7 @@ This is not PiP, but the solution of using NOT EXISTS might be applicable?
 
 https://gis.stackexchange.com/questions/162651/looking-for-boolean-intersection-of-small-table-with-huge-table
 
-### Finding highest point in polygons
+### Find highest point in polygons
 Given 2 tables:
 
 * `obstacles` (point layer) with a column height_m (INTEGER) 
@@ -102,6 +113,7 @@ https://lists.osgeo.org/pipermail/postgis-users/2020-May/044161.html
 
 ### Count Points in Polygons with two Point tables
 https://gis.stackexchange.com/questions/377741/find-count-of-multiple-tables-that-st-intersect-a-main-table
+
 ```sql
 SELECT  ply.polyname, SUM(pnt1.cnt) AS pointtable1count, SUM(pnt2.cnt) AS pointtable2count
 FROM    polytable AS ply,
@@ -481,7 +493,8 @@ UPDATE points
 https://gis.stackexchange.com/questions/377674/find-nearest-polygons-of-a-multi-line-string
 
 
-## Query - Geomemtric Shape
+## Query - Geometric Shape
+
 ### Find narrow polygons
 https://gis.stackexchange.com/questions/316128/identifying-long-and-narrow-polygons-in-with-postgis
 
