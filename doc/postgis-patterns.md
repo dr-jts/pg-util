@@ -64,15 +64,14 @@ https://gis.stackexchange.com/questions/162651/looking-for-boolean-intersection-
 ### Finding highest point in polygons
 Given 2 tables:
 
-obstacles (point layer) with a column height_m (INTEGER)
-polyobstacles (polygon layer)
+* `obstacles` (point layer) with a column height_m (INTEGER) 
+  * has obstacles all over the map
+* `polyobstacles` (polygon layer)
+  * has some polygons containing some of the obstacle points.
 
-the point layer has obstacles all over the map
-the polygon layer has some polygons containing some of the obstacle points.
+Select the highest obstacle in each polygon. If there are several points with the same highest height a random obstacle of those highest shall be selected.
 
-Select the highest obstacle in each polygon. If there is several points with the same highest height a random obstacle of those highest shall be selected.
-
-Solution - JOIN LATERAL
+#### Solution - JOIN LATERAL
 ```
 SELECT poly.id, obs_max.*
 FROM polyobstacle poly 
@@ -82,7 +81,7 @@ JOIN LATERAL (SELECT * FROM obstacles o
   ) AS obs_max ON true;
 ```
 #### Solution - DISTINCT ON
-Do a spatial join between polygon and points and start you query with DISTINCT ON (poly.id) poly.id, o.height etc.
+Do a spatial join between polygon and points and use `DISTINCT ON (poly.id) poly.id, o.height` etc.
 
 #### Solution - ARRAY_AGG
 ```
@@ -112,7 +111,10 @@ FROM    polytable AS ply,
         ) AS pnt2
 GROUP BY 1;
 ```
+
+
 ## Query - Lines
+
 ### Find lines which have a given angle of incidence
 https://gis.stackexchange.com/questions/134244/query-road-shape?noredirect=1&lq=1
 
