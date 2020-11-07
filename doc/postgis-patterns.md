@@ -15,7 +15,7 @@ SELECT pt.id, poly.*
   JOIN polygons poly ON ST_Intersects(poly.geom, pt.geom);
 ```
 Caveat: this will return multiple records if a point lies in multiple polygons. To ensure only a single record is returned per point, and also to include points which do not lie in any polygon, use:
-```
+```sql
 SELECT pt.id, poly.*
   FROM grid pt
   LEFT OUTER JOIN LATERAL 
