@@ -744,8 +744,11 @@ https://gis.stackexchange.com/questions/74119/a-linestring-merger-algorithm
 Merge lines with common attributes at degree-2 nodes
 
 https://gis.stackexchange.com/questions/326433/st-linemerge-to-simplify-road-network?rq=1
-Polygon Intersection
-Find Intersection of all geometries in a set
+
+
+
+## Polygon Intersection
+### Find Intersection of all geometries in a set
 https://gis.stackexchange.com/questions/271824/st-intersection-intersection-of-all-geometries-in-a-table
 
 https://gis.stackexchange.com/questions/271941/looping-through-table-to-get-single-intersection-from-n2-geometries-using-postg
@@ -762,25 +765,29 @@ How to find all groups of intersecting polygons.  DBSCAN maybe?  (This is sugges
 Intersection performance - Use Polygons instead of MultiPolygons
 https://gis.stackexchange.com/questions/101425/using-multipolygon-or-polygon-features-for-large-intersect-operations
 
-Intersection performance - Check containment first
+### Intersection performance - Check containment first
 https://postgis.net/2014/03/14/tip_intersection_faster/
 
-Aggregated Intersection
+### Aggregated Intersection
 https://gis.stackexchange.com/questions/269875/aggregate-version-of-st-intersection
-Polygon Difference
-Subtracting large set of polygons from a surrounding box
+
+
+## Polygon Difference
+### Subtract large set of polygons from a surrounding box
 https://gis.stackexchange.com/questions/330051/obtaining-the-geospatial-complement-of-a-set-of-polygons-to-a-bounding-box-in-po/333562#333562
 
 Issues
 conventional approach is too slow to use  (Note: user never actually completed processing, so might not have encountered geometry size issues, which could also occur)
-Subtract MultiPolygons from LineStrings
+
+### Subtract MultiPolygons from LineStrings
 https://gis.stackexchange.com/questions/239696/subtract-multipolygon-table-from-linestring-table
 
 https://gis.stackexchange.com/questions/193217/st-difference-on-linestrings-and-polygons-slow-and-fails
-Splitting Polygons by distance from a Polygon
+
+### Split Polygons by distance from a Polygon
 https://gis.stackexchange.com/questions/78073/separate-a-polygon-in-different-polygons-depending-of-the-distance-to-another-po
 
-Cutting detailed polygons into a base polygonal coverage
+### Cut detailed polygons into a base polygonal coverage
 https://gis.stackexchange.com/questions/71461/using-st-difference-and-preserving-attributes-in-postgis
 
 Solution
@@ -791,47 +798,51 @@ The differenced base polygons
 The detailed polygons
 All remaining base polygons which were not changed
 
-Subtract Areas from a set of Polygons
+### Subtract Areas from a set of Polygons
 https://gis.stackexchange.com/questions/250674/postgis-st-difference-similar-to-arcgis-erase
 
 https://gis.stackexchange.com/questions/187406/how-to-use-st-difference-and-st-intersection-in-case-of-multipolygons-postgis
 
 https://gis.stackexchange.com/questions/90174/postgis-when-i-add-a-polygon-delete-overlapping-areas-in-other-layers
-Find Part of Polygons not fully contained by union of other Polygons
+### Find Part of Polygons not fully contained by union of other Polygons
 https://gis.stackexchange.com/questions/313039/find-what-polygons-are-not-fully-covered-by-union-of-polygons-from-another-layer
 
-Polygon Symmetric Difference
-Construct symmetric difference of two tables
+## Polygon Symmetric Difference
+### Construct symmetric difference of two tables
 https://gis.stackexchange.com/questions/302458/symmetrical-difference-between-two-layers
-Overlay - Coverage / Polygon
+
+
+## Overlay - Coverage / Polygon
 https://gis.stackexchange.com/questions/109692/how-to-replicate-arcgis-intersect-in-postgis
 
 http://blog.cleverelephant.ca/2019/07/postgis-overlays.html
-Flatten / Create coverage from Nested Polygons
+### Flatten / Create coverage from Nested Polygons
 https://gis.stackexchange.com/questions/266005/postgis-separate-nested-polygons
-Create Coverage from overlapping Polygons
+### Create Coverage from overlapping Polygons
 https://gis.stackexchange.com/questions/83/separate-polygons-based-on-intersection-using-postgis
 https://gis.stackexchange.com/questions/112498/postgis-overlay-style-union-not-dissolve-style
 Solution
 One answer suggests the standard Extract Lines > Node > Polygonize approach (although does not include the PIP parentage step).  But a comment says that this does not scale well (Pierre Racine…).
 Also links to PostGIS wiki:  https://trac.osgeo.org/postgis/wiki/UsersWikiExamplesOverlayTables
-Improve performance of a coverage overlay
+
+### Improve performance of a coverage overlay
 https://gis.stackexchange.com/questions/31310/acquiring-arcgis-like-speed-in-postgis/31562
 Problem
 Finding all intersections of a large set of parcel polygons against a set of jurisdiction polygons is slow
 Solution
 Reduce # calls to ST_Intersection by testing if parcel is wholly contained in polygon. 
-
-INSERT INTO parcel_jurisdictions(parcel_gid,jurisdiction_gid,isect_geom) SELECT a.orig_gid AS parcel_gid, b.orig_gid AS jurisdiction_gid, CASE WHEN ST_Within(a.geom,b.geom) THEN a.geom ELSE ST_Multi(ST_Intersection(a.geom,b.geom)) END AS geom FROM valid_parcels a JOIN valid_jurisdictions b ON ST_Intersects(a.geom, b.geom)
+```
+INSERT INTO parcel_jurisdictions(parcel_gid,jurisdiction_gid,isect_geom) SELECT a.orig_gid AS parcel_gid, b.orig_gid AS jurisdiction_gid, CASE WHEN ST_Within(a.geom,b.geom) THEN a.geom ELSE ST_Multi(ST_Intersection(a.geom,b.geom)) END AS geom FROM valid_parcels a JOIN valid_jurisdictions b ON ST_Intersects(a.geom, b.geom);
+```
 References
 https://postgis.net/2014/03/14/tip_intersection_faster/
 
 
-Determine list of cells which are touched by a path
+### Find cells touched by a path
 https://gis.stackexchange.com/questions/317401/maintaining-order-and-repetition-of-cell-names-using-postgis?atw=1
-Finding non-covered polygons
+### Find non-covered polygons
 https://gis.stackexchange.com/questions/333302/selecting-non-overlapping-polygons-from-a-one-layer-in-postgis/334217#334217
-
+```
 WITH
 data AS (
     SELECT * FROM (VALUES
@@ -852,19 +863,19 @@ SELECT a.id
 FROM data AS A
 LEFT JOIN data AS b ON a.id <> b.id AND ST_CoveredBy(a.geom, b.geom)
 WHERE b.geom IS NULL;
-
-Counting Overlap Depth in set of polygons
+```
+### Count Overlap Depth in set of polygons
 https://gis.stackexchange.com/questions/159282/counting-overlapping-polygons-in-postgis-using-st-union-very-slow
 
 Solution 1: 
 Compute overlay of dataset using ST_Node and ST_Polygonize
 Count overlap depth using ST_PointOnSurface and ST_Contains
 
-Identify Overlay Resultant Parentage
+### Identify Overlay Resultant Parentage
 
 https://gis.stackexchange.com/questions/315368/listing-all-overlapping-polygons-using-postgis
 
-PostGIS Union of two polygons layers
+### PostGIS Union of two polygon layers
 Wants a coverage overlay (called “QGIS Union”)
 https://gis.stackexchange.com/questions/302086/postgis-union-of-two-polygons-layers?rq=1
 
@@ -872,19 +883,21 @@ See also
 https://gis.stackexchange.com/questions/179533/arcgis-union-equivalent-in-postgis?rq=1
 https://gis.stackexchange.com/questions/115927/is-there-a-union-function-for-multiple-layers-comparable-to-arcgis-in-open-sourc
 
-Unioning Non-clean Polygons
+### Union Non-clean Polygons
 https://gis.stackexchange.com/questions/31895/joining-lots-of-small-polygons-to-form-larger-polygon-using-postgis/31905#31905
 
-Summing area-weighted polygons (Overlay 2 coverages)
+### Sum area-weighted polygons (Overlay 2 coverages)
 https://gis.stackexchange.com/questions/171333/weighting-amount-of-overlapping-polygons-in-postgis
 
-Compute area covered by overlapping polygons with attribute
+### Compute area covered by overlapping polygons with attribute
 https://gis.stackexchange.com/questions/90174/postgis-when-i-add-a-polygon-delete-overlapping-areas-in-other-layers
-Return only polygons from Overlay
+
+### Return only polygons from Overlay
 https://gis.stackexchange.com/questions/89231/postgis-st-intersection-of-polygons-can-return-lines?rq=1
 
 https://gis.stackexchange.com/questions/242741/st-intersection-returns-erroneous-polygons?noredirect=1&lq=1
-Compute Coverage from Overlapping Polygons
+
+### Compute Coverage from Overlapping Polygons
 https://gis.stackexchange.com/questions/206473/obtaining-each-unique-area-of-overlapping-polygons-in-postgres-9-6-postgis-2-3
 
 Problem
@@ -897,15 +910,17 @@ Solution
 ST_Boundary -> ST_Union -> ST_Polygonize ??
 
 
-Overlay - Lines
+## Overlay - Lines
 https://gis.stackexchange.com/questions/186242/how-to-get-smallest-line-segments-from-intersection-difference-of-multiple-ove
-Count All Intersections Between 2 Linestrings
+### Count All Intersections Between 2 Linestrings
 https://gis.stackexchange.com/questions/347790/splitting-self-overlapping-lines-with-points-using-postgis
 
-Remove Line Overlaps Hierarchically
+### Remove Line Overlaps Hierarchically
 https://gis.stackexchange.com/questions/372572/how-to-remove-line-overlap-hierachically-in-postgis-with-st-difference
-Polygon Union
-Union of Massive Number of Point Buffers
+
+
+## Polygon Union
+### Union of Massive Number of Point Buffers
 https://gis.stackexchange.com/questions/31880/memory-issue-when-trying-to-buffer-union-large-dataset-using-postgis?noredirect=1&lq=1
 
 Union a massive number of buffers around points which have an uneven distribution (points are demographic data in the UK).
@@ -915,29 +930,33 @@ Implement a “SQL-level” cascaded union as follows:
 Spatially sort data based on ST_GeoHash
 union smaller partitions of the data (partition size = 100K)
 union the partitions together 
-Polygon Coverage Union with slivers removed
+
+### Polygon Coverage Union with slivers removed
 https://gis.stackexchange.com/questions/71809/is-there-a-dissolve-st-union-function-that-will-close-gaps-between-features?rq=1
 
 Solution - NOT SURE
 
-Polygon Coverage Union with gaps removed
+### Polygon Coverage Union with gaps removed
 https://gis.stackexchange.com/questions/356480/is-it-possible-create-a-polygon-from-more-polygons-that-are-not-overlapped-but-c
 
 https://gis.stackexchange.com/questions/316000/using-st-union-to-combine-several-polygons-to-one-multipolygon-using-postgis/31612
 
 Both of these have answers recommending using a small buffer outwards and then the inverse on the result.
-ST_Split creates invalid coverage (holes appear in Union)
+
+### ST_Split creates invalid coverage (holes appear in Union)
 https://gis.stackexchange.com/questions/344716/holes-after-st-split-with-postgis
 
 Solution
 ??  Need some way to create a clean coverage
-Union Intersecting Polygons
+
+
+### Union Intersecting Polygons
 https://gis.stackexchange.com/questions/187728/alternative-to-st-union-st-memunion-for-merging-overlapping-polygons-using-postg?rq=1
 
-Union groups of polygons
+### Union groups of polygons
 https://gis.stackexchange.com/questions/185393/what-is-the-best-way-to-merge-lots-of-small-adjacents-polygons-postgis?noredirect=1&lq=1
 
-Union Edge-Adjacent Polygons
+### Union Edge-Adjacent Polygons
 Only union polygons which share an edge (not just touch)
 https://gis.stackexchange.com/questions/1387/is-there-a-dissolve-function-in-postgis-other-than-st-union?rq=1
 https://gis.stackexchange.com/questions/24634/merging-polygons-that-intersect-by-more-than-a-specified-amount?rq=1
@@ -947,82 +966,87 @@ Union only polygons which intersect, keep non-intersecting ones unchanged.  Goal
 Solution
 Should be able to find equivalence classes of intersecting polygons and union each separately?
 See Also
-Grouping touching Polygons
+
+### Grouping touching Polygons
 Can use ST_DBSCAN with very small distance to group touching polygons
 
-Enlarge Polygons to Fill Boundary
+### Enlarge Polygons to Fill Boundary
 https://gis.stackexchange.com/questions/91889/adjusting-polygons-to-boundary-and-filling-holes?rq=1
 
-Boundary of Coverage of Polygons
+### Boundary of Coverage of Polygons
 https://gis.stackexchange.com/questions/324736/extracting-single-boundary-from-multipolygon-in-postgis
 
 Solution
 The obvious: Union, then extract boundary
 
-Union of cells grouped by ID
+### Union of cells grouped by ID
 https://gis.stackexchange.com/questions/288880/finding-geometry-of-cluster-from-points-collection-using-postgis
 
-Union of set of geometry specified by IDs
+### Union of set of geometry specified by IDs
 SELECT ST_Union(geo)) FROM ( SELECT geom FROM table WHERE id IN ( … ) ) as foo;
 
-Union of polygons with equal or lower value
+### Union of polygons with equal or lower value
 https://gis.stackexchange.com/questions/161849/postgis-sql-request-with-aggregating-st-union?rq=1
 Solution
 Nice use of window functions with PARTITION BY and ORDER BY.
 Not sure what happens if there are two polygons with same value though.  Worth finding out
 
-Union Groups of Adjacent Polygon, keeping attribution for singletons
+### Union Groups of Adjacent Polygon, keeping attribution for singletons
 https://gis.stackexchange.com/questions/366374/how-to-use-dissolve-a-subset-of-a-postgis-table-based-on-a-value-in-a-column
 
 Solution
 Use ST_ClusterDBSCAN
-Polygon Splitting
+
+
+## Polygon Splitting
 https://gis.stackexchange.com/questions/299849/split-polygon-into-separate-polygons-using-a-table-of-individual-lines
 
 https://gis.stackexchange.com/questions/215886/split-lines-by-polygons
 
-Splitting rectangles along North-South axis
+### Split rectangles along North-South axis
 https://gis.stackexchange.com/questions/239801/how-can-i-split-a-polygon-into-two-equal-parts-along-a-n-s-axis?rq=1
 
-Splitting rotated rectangles into equal parts
+### Split rotated rectangles into equal parts
 https://gis.stackexchange.com/questions/286184/splitting-polygon-in-equal-parts-based-on-polygon-area
 
 See also next problem
 
-Splitting Polygons into equal parts
+### Split Polygons into equal parts
 http://blog.cleverelephant.ca/2018/06/polygon-splitting.html
 
 Hmm..  does this really result in equal-area subdivision? The Voronoi-of-centroid step is distance-based, not area based…. So may not always work?  Would be good to try this on a bunch of country outines
 
-Line Splitting
-Splitting Self-Overlapping Lines at Points not on the lines
+## Line Splitting
+### Split Self-Overlapping Lines at Points not on the lines
 https://gis.stackexchange.com/questions/347790/splitting-self-overlapping-lines-with-points-using-postgis
-Transformations
-Scaling polygon around a given point
+
+
+## Transformations
+### Scale polygon around a given point
 https://gis.stackexchange.com/questions/227435/postgis-scaling-for-polygons-at-a-fixed-center-location
 
 No solution so far
 Issues
 SQL given is overly complex and inefficient.  But idea is right
 
-Constructions
-Expanding polygons contained inside a bounding polygon until one vertice touches
+## Constructions
+### Expanding polygons contained inside a bounding polygon until one vertice touches
 https://gis.stackexchange.com/questions/294163/sql-postgis-expanding-polygons-contained-inside-another-polygon-until-one-ver
 
-Bounding box of set of MULTILINESTRINGs
+### Bounding box of set of MULTILINESTRINGs
 https://gis.stackexchange.com/questions/115494/bounding-box-of-set-of-multilinestrings-in-postgis?rq=1
 
-Generating Land-Constrained Point Grids
+### Generate Land-Constrained Point Grids
 https://korban.net/posts/postgres/2019-10-17-generating-land-constrained-point-grids/
 
-Generating Square Grids
+### Create Square Grids
 https://gis.stackexchange.com/questions/16374/creating-regular-polygon-grid-in-postgis
 
 https://gis.stackexchange.com/questions/4663/how-to-create-regular-point-grid-inside-a-polygon-in-postgis
 
 https://gis.stackexchange.com/questions/271234/creating-a-grid-on-a-polygon-and-find-number-of-points-in-each-grid
 
-Polygon Centrelines
+### Create Polygon Centrelines
 https://gis.stackexchange.com/questions/322392/average-of-two-lines?noredirect=1&lq=1
 
 https://gis.stackexchange.com/questions/50668/how-can-i-merge-collapse-nearby-and-parallel-road-lines-eg-a-dual-carriageway
@@ -1034,33 +1058,37 @@ Idea: triangulate polygon, then connect midpoints of interior lines
 
 Idea 2: find line segments for nearest points of each line vertex.  Order by distance along line (percentage?).  Discard any that have a retrograde direction.  Join centrepoints of segments.
 
-Straight Skeleton
+### Straight Skeleton
 https://github.com/twak/campskeleton
-Generate Well-spaced points within Polygon
+
+### Generate Well-spaced points within Polygon
 https://gis.stackexchange.com/questions/377606/ensuring-all-points-are-a-certain-distance-from-polygon-boundary
 
 Uses clustering on randomly generated points.  
 Suggestion is to use neg-buffered polygon to ensure distance from polygon boundary
-Hulls / Covering Polygons
-Construct polygon containing lines
+
+
+## Hulls / Covering Polygons
+### Construct polygon containing lines
 https://gis.stackexchange.com/questions/238/find-polygon-that-contains-all-linestring-records-in-postgis-table
 
-Construct lines between all points of a Polygon
+### Construct lines between all points of a Polygon
 https://gis.stackexchange.com/questions/58534/get-the-lines-between-all-points-of-a-polygon-in-postgis-avoid-nested-loop
 
 Solution
 Rework given SQL using CROSS JOIN and a self join
-Generating Regions from Points
+### Generating Regions from Points
 https://gis.stackexchange.com/questions/92913/extra-detailed-bounding-polygon-from-many-geometric-points?rq=1
 
-Generate regions from large sets of points (100K) tagged with region attribute.
+### Generate regions from large sets of points (100K) tagged with region attribute.
 
 Could use ST_ConcaveHull, but results would overlap
 Perhaps ST_Voronoi would be better?  How would this work, and what are limits on size of data?
 
-Construct a Star Polygon from a set of Points
+### Construct a Star Polygon from a set of Points
 https://gis.stackexchange.com/questions/349945/creating-precise-shapes-using-list-of-coordinates
 Solution
+```
 WITH pts(pt) AS (VALUES
 (st_transform(st_setsrid(st_makepoint(-97.5660461, 30.4894905), 4326),4269) ),
 (st_transform(st_setsrid(st_makepoint(-97.5657216, 30.4902173), 4326),4269) ),
@@ -1081,35 +1109,40 @@ line AS (SELECT ST_MakeLine( pt ORDER BY ST_Azimuth( centroid, pt ) ) AS geom
 poly AS (SELECT ST_MakePolygon( ST_AddPoint( geom, ST_StartPoint( geom ))) AS geom
     FROM line)
 SELECT geom FROM poly;
+```
 
-
-Buffering
-Variable Width Buffer
+## Buffering
+### Variable Width Buffer
 https://gis.stackexchange.com/questions/340968/varying-size-buffer-along-a-line-with-postgis
-Expand a rectangular polygon
+
+### Expand a rectangular polygon
 https://gis.stackexchange.com/questions/308333/expanding-polygon-by-distance-using-postgis
 
-Buffering Coastlines with inlet skeletons
+### Buffering Coastlines with inlet skeletons
 https://gis.stackexchange.com/questions/300867/how-can-i-buffer-a-mulipolygon-only-on-the-coastline
-Removing Line Buffer artifacts
+### Removing Line Buffer artifacts
 https://gis.stackexchange.com/questions/363025/how-to-run-a-moving-window-function-in-a-conditional-statement-in-postgis-for-bu
 
 Quite bizarre, but apparently works.
-Measuring
-Find Media width of Road Polygons
+
+
+## Measuring
+### Find Median width of Road Polygons
 https://gis.stackexchange.com/questions/364173/calculate-median-width-of-road-polygons
 
-Unbuffering - find average distance from a buffer and source polygon
+### Unbuffering - find average distance from a buffer and source polygon
 https://gis.stackexchange.com/questions/33312/is-there-a-st-buffer-inverse-function-that-returns-a-width-estimation
 
 Also: https://gis.stackexchange.com/questions/20279/calculating-average-width-of-polygon
 
-Compute Length and Width of an arbitrary rectangle
+### Compute Length and Width of an arbitrary rectangle
 https://gis.stackexchange.com/questions/366832/get-dimension-of-rectangular-polygon-postgis
-Simplification
+
+
+## Simplification
 https://gis.stackexchange.com/questions/293429/decrease-polygon-vertices-count-maintaining-its-aspect
 
-Smoothing
+## Smoothing
 https://gis.stackexchange.com/questions/313667/postgis-snap-line-segment-endpoint-to-closest-other-line-segment
 
 Problem is to smooth a network of lines.  Network is not fully noded, so smoothing causes touching lines to become disconnected.
@@ -1117,31 +1150,34 @@ Solution
 Probably to node the network before smoothing.
 Not sure how to node the network and preserve IDs however!?
 
-Ordering Geometry
-Ordering a Square Grid
+## Ordering Geometry
+### Ordering a Square Grid
 https://gis.stackexchange.com/questions/346519/sorting-polygons-into-a-n-x-n-spatial-array
 
 https://gis.stackexchange.com/questions/255512/automatically-name-rectangles-by-spatial-order-or-position-to-each-other?noredirect=1&lq=1
 
-Serpentine Ordering
+### Serpentine Ordering
 https://gis.stackexchange.com/questions/176197/seeking-tool-algorithm-for-assigning-code-to-enumeration-areas-polygons-using?noredirect=1&lq=1
 
 No solution in the post!
 
 Also
 https://gis.stackexchange.com/questions/73978/numbering-polygons-according-to-their-spatial-relationships?noredirect=1&lq=1
-Ordering Polygons along a line
+
+### Ordering Polygons along a line
 https://gis.stackexchange.com/questions/201306/numbering-adjacent-polygons-in-sequential-order?noredirect=1&lq=1
 
 No explicit solution given, but suggestion is to compute adjacency graph and then do a graph traversal
 
-Connecting Circles Into a Polygonal Path
+### Connecting Circles Into a Polygonal Path
 https://gis.stackexchange.com/questions/246521/connecting-circles-with-lines-cover-all-circles-using-postgis
 
-Ordered list of polygons intersecting a line
+### Ordered list of polygons intersecting a line
 https://gis.stackexchange.com/questions/179061/find-all-intersections-of-a-linestring-and-a-polygon-and-the-order-in-which-it-i?rq=1
-Generating Point Distributions
-Generating Evenly-Distributed Points in a Polygon
+
+
+## Generating Point Distributions
+### Generate Evenly-Distributed Points in a Polygon
 
 https://gis.stackexchange.com/questions/8468/creating-evenly-distributed-points-within-an-irregular-boundary?rq=1
 
@@ -1150,28 +1186,28 @@ One solution: create a grid of points and then clip to polygon
 See also: https://math.stackexchange.com/questions/15624/distribute-a-fixed-number-of-points-uniformly-inside-a-polygon
 https://gis.stackexchange.com/questions/4663/how-to-create-regular-point-grid-inside-a-polygon-in-postgis
 
-Place Maximum Number of Points in a Polygon
+### Place Maximum Number of Points in a Polygon
 https://gis.stackexchange.com/questions/4828/seeking-algorithm-to-place-maximum-number-of-points-within-constrained-area-at-m
 
-Thinning out Points along lines
+### Thin out Points along lines
 https://gis.stackexchange.com/questions/131854/spacing-a-set-of-points?rq=1
 
-Contouring
-Generate contours from evenly-spaced weighted points
+## Contouring
+### Generate contours from evenly-spaced weighted points
 https://gis.stackexchange.com/questions/85968/clustering-points-in-postgresql-to-create-contour-map?rq=1
 NO SOLUTION
 
-Contouring Irregularly spaced points
+### Contouring Irregularly spaced points
 https://abelvm.github.io/sql/contour/
 
 Solution
-An impressive PG-only solution using a Delaunay with triangles cut by contour lines.
+An impressive PostGIS-only solution using a Delaunay with triangles cut by contour lines.
 Uses the so-called Meandering Triangles method for isolines.
 
-Clustering
+## Clustering
 See https://gis.stackexchange.com/questions/11567/spatial-clustering-with-postgis for a variety of approaches that predate a lot of the PostGIS clustering functions.
 
-Grid-Based Clustering
+### Grid-Based Clustering
 https://gis.stackexchange.com/questions/352562/is-it-possible-to-get-one-geometry-per-area-box-in-postgis
 
 Solution 1
@@ -1179,12 +1215,14 @@ Use ST_SnapToGrid to compute a cell id for each point, then bin the points based
 
 Solution 2
 Generate grid of cells covering desired area, then JOIN LATERAL to points to aggregate.  Not sure how to select a representative point doing this though - perhaps MIN or MAX?  Requires a grid-generating function, which is coming in PostGIS 3.1
-Non-spatial clustering by distance
+
+### Non-spatial clustering by distance
 https://stackoverflow.com/questions/49250734/sql-window-function-that-groups-values-within-selected-distance
-Finding Density Centroids Within Polygons
+
+### Find Density Centroids Within Polygons
 https://gis.stackexchange.com/questions/187256/finding-density-centroids-within-polygons-in-postgis?rq=1
 
-Grouping touching Polygons
+### Group touching Polygons
 https://gis.stackexchange.com/questions/343514/postgis-recursively-finding-intersections-of-polygons-to-determine-clusters
 Solution: Use ST_DBSCAN which provides very good performance
 
@@ -1199,16 +1237,18 @@ https://gis.stackexchange.com/questions/254519/group-and-union-polygons-that-sha
 
 Issues
 DBSCAN uses distance. This will also cluster polygons which touch only at a point, not just along an edge.  Is there a way to improve this?  Allow a different distance metric perhaps - say length of overlap?
-Grouping connected LineStrings
+
+### Group connected LineStrings
 https://gis.stackexchange.com/questions/94203/grouping-connected-linestrings-in-postgis
 
 Presents a recursive CTE approach, but ultimately recommends using ST_ClusterDBCSAN
 
 https://gis.stackexchange.com/questions/189091/postgis-how-to-merge-contiguous-features-sharing-same-attributes-values
-Kernel Density
+
+### Kernel Density
 https://gist.github.com/AbelVM/dc86f01fbda7ba24b5091a7f9b48d2ee
 
-Group Polygon Coverage into similar sized Areas
+### Group Polygon Coverage into similar-sized Areas
 https://gis.stackexchange.com/questions/350339/how-to-create-polygons-of-a-specific-size
 
 More generally: how to group adjacent polygons into sets with similar sum of a given attribute.
@@ -1221,137 +1261,154 @@ Build adjacency graph and aggregate based on total, and perhaps some distance cr
 Note: posts do not provide a PostGIS solution for this.  Not known if such a solution exists.
 Would need a recursive query to do this.
 How to keep clusters compact?
-Bottom-Up Clustering Algorithm
+
+### Bottom-Up Clustering Algorithm
 Not sure if this is worthwhile or not.  Possibly superseded by more recent standard PostGIS clustering functions
 
 https://gis.stackexchange.com/questions/113545/get-a-single-cluster-from-cloud-of-points-with-specified-maximum-diameter-in-pos
 
-Using ClusterWithin VS ClusterDBSCAN
+### Using ClusterWithin VS ClusterDBSCAN
 https://gis.stackexchange.com/questions/348484/clustering-points-in-postgis
 
 Explains how DBSCAN is a superset of ClusterWithin, and provides simpler, more powerful SQL.
 
-Removing Clusters of Points
+### Removing Clusters of Points
 https://gis.stackexchange.com/questions/356663/postgis-finding-duplicate-label-within-a-radius
-Cluster with DBSCAN partitioned by polygons
+
+### Cluster with DBSCAN partitioned by polygons
 https://gis.stackexchange.com/questions/284190/python-cluster-points-with-dbscan-keeping-into-account-polygon-boundaries?rq=1
 
-Compute centroid of a group of points
+### Compute centroid of a group of points
 https://gis.stackexchange.com/questions/269407/centroid-of-point-cluster-points
 
-FInd polygons which are not close to any other polygon
+### FInd polygons which are not close to any other polygon
 https://gis.stackexchange.com/questions/312167/calculating-shortest-distance-between-polygons
 Solution
-Use ST_GeometricMedian
+Use `ST_GeometricMedian`
 
-Cluster with DBSCAN partitioned by record types
+### Cluster with DBSCAN partitioned by record types
 https://gis.stackexchange.com/questions/357838/how-to-cluster-points-with-st-clusterdbscan-taking-into-account-their-type-store
 
-Select evenly-distributed points of unevenly-distributed set, with priority
+### Select evenly-distributed points of unevenly-distributed set, with priority
 https://gis.stackexchange.com/questions/346412/select-evenly-distirbuted-points-of-unevenly-distributed-set
 
-Construct K-Means clusters for each Polygon
+### Construct K-Means clusters for each Polygon
 https://gis.stackexchange.com/questions/376563/cluster-points-in-each-polygon-into-n-parts 
 
 Use window function PARTITION BY
-Surface Interpolation
-IDW Interpolation over a grid of points
+
+
+## Surface Interpolation
+### IDW Interpolation over a grid of points
 https://gis.stackexchange.com/questions/373153/spatial-interpolation-in-postgis-without-outputting-raster
-Concave Hull
-Improve Concave Hull algorithm
+
+
+## Concave Hull
+### Improve Concave Hull algorithm
 https://carto.com/blog/calculating-catchment-human-mobility-data/
 
-Cleaning Data
-Validating Polygons
+## Cleaning Data
+### Validating Polygons
 https://gis.stackexchange.com/questions/1060/what-are-the-implications-of-invalid-geometries?noredirect=1&lq=1
-Removing Ring Self-Intersections / MakeValid
+
+### Removing Ring Self-Intersections / MakeValid
 https://gis.stackexchange.com/questions/15286/ring-self-intersections-in-postgis?rq=1
 The question and standard answer (buffer(0) are fairly mundane. But note the answer where the user uses MakeValid and keeps only the result polygons with significant area.  Might be a good option to MakeValid?
-Removing Slivers
+
+### Removing Slivers
 https://gis.stackexchange.com/questions/289717/fix-slivers-holes-between-polygons-generated-after-removing-spikes
 
-Spike Removing
+### Spike Removing
 https://trac.osgeo.org/postgis/wiki/UsersWikiExamplesSpikeRemover
 
 https://gasparesganga.com/labs/postgis-normalize-geometry/
 
 
-Conflation / Matching
-Adjusting polygons to fill a containing Polygon
+## Conflation / Matching
+### Adjust polygons to fill a containing Polygon
 https://gis.stackexchange.com/questions/91889/adjusting-polygons-to-boundary-and-filling-holes?rq=1
 
-Matching Polygons for Shape Similarity 
+### Match Polygons by Shape Similarity 
 https://gis.stackexchange.com/questions/362560/measuring-the-similarity-of-two-polygons-in-postgis
 
 There are different ways to measure the similarity between two polygons such as average distance between the boundaries, Hausdorff distance, Turning Function, Comparing Fourier Transformation of the two polygons
 
 Gives code for Average Boundary Distance
-Selecting Polygon with more accurate linework
+
+### Find Polygon with more accurate linework
 https://gis.stackexchange.com/questions/257052/given-two-polygons-find-the-the-one-with-more-detailed-accurate-shoreline
 
-Matching sets of LineStrings
+### Match sets of LineStrings
 https://gis.stackexchange.com/questions/347787/compare-two-set-of-linestrings
 
-Matching paths to road network
+### Match paths to road network
 https://gis.stackexchange.com/questions/349001/aligning-line-with-closest-line-segment-in-postgis
 
-Matching paths
+### Match paths
 https://gis.stackexchange.com/questions/368146/matching-segments-within-tracks-in-postgis
-Polygon Averaging
+
+### Polygon Averaging
 https://info.crunchydata.com/blog/polygon-averaging-in-postgis
 
 Solution: Overlay, count “depth” of each resultant, union resultants of desired depth.
-Coordinate Systems
-How to find a good planar projection
+
+
+## Coordinate Systems
+
+### Find a good planar projection
 https://gis.stackexchange.com/questions/275057/how-to-find-good-meter-based-projection-in-postgis
 
 Also https://gis.stackexchange.com/questions/341243/postgis-buffer-in-meters-without-geography
 
-ST_Transform creates invalid geometry
+### ST_Transform creates invalid geometry
 https://gis.stackexchange.com/questions/341160/why-do-two-tables-with-valid-geometry-return-self-intersection-errors-when-inter
 
 Also:  https://trac.osgeo.org/postgis/ticket/4755
 Has an example geometry which becomes invalid under transform
-Misc
 
-Seaway Distances & Routes
+## Miscellaneous
+
+### Seaway Distances & Routes
 https://www.ausvet.com.au/seaway-distances-with-postgresql/
 
 
-Linear Referencing/Line Handling
-Extrapolating Lines
+## Linear Referencing/Line Handling
+### Extrapolate Lines
 https://gis.stackexchange.com/questions/33055/extrapolating-a-line-in-postgis
 
 ST_LineInterpolatePoint should be enhanced to allow fractions outside [0,1].
 
-Extending a LineString to the boundary of a polygon
+### Extend a LineString to the boundary of a polygon
 https://gis.stackexchange.com/questions/345463/how-can-i-extend-a-linestring-to-the-edge-of-an-enclosing-polygon-in-postgis
 
 Ideas
 A function ST_LineExtract(line, index1, index2) to extract a portion of a LineString between two indices
 
-Compute Angle at which Two Lines Intersect
+### Compute Angle at which Two Lines Intersect
 https://gis.stackexchange.com/questions/25126/how-to-calculate-the-angle-at-which-two-lines-intersect-in-postgis?rq=1
-Compute Azimuth at a Point on a Line
+
+### Compute Azimuth at a Point on a Line
 https://gis.stackexchange.com/questions/178687/rotate-point-along-line-layer
 
 Solution
 Would be nice to have a ST_SegmentIndex function to get the index of the segment nearest to a point.  Then this becomes simple.
 
-Compute Perpendicular Distance to a Baseline (AKA “Width” of a curve)
+### Compute Perpendicular Distance to a Baseline (AKA “Width” of a curve)
 https://gis.stackexchange.com/questions/54575/how-to-calculate-the-depth-of-a-linestring-using-postgis?rq=1
-Measure Length of every LineString segment
+
+### Measure Length of every LineString segment
 https://gis.stackexchange.com/questions/239576/measure-length-of-each-segment-for-a-polygon-in-postgis
 Solution
 Use CROSS JOIN LATERAL with generate_series and ST_MakeLine, ST_Length
 ST_DumpSegments would make this much easier!
-Identify Lines that form Rings
+
+### Find Lines that form Rings
 https://gis.stackexchange.com/questions/32224/select-the-lines-that-form-a-ring-in-postgis
 Solutions
 Polygonize all lines, then identify lines which intersect each polygon
 Complicated recursive solution using ST_LineMerge!
 
-Adding intersection points between sets of Lines (AKA Noding)
+### Add intersection points between sets of Lines (AKA Noding)
 https://gis.stackexchange.com/questions/41162/adding-multiple-points-to-a-linestring-in-postgis?rq=1
 Problem
 Add nodes into a road network from access side roads
@@ -1360,7 +1417,8 @@ Solutions
 One post recommends simply unioning (overlaying) all the linework.  This was accepted, but has obvious problems:
 Hard to extract just the road network lines
 If side road falls slightly short will not create a node
-Merging lines that touch at endpoints
+
+### Merge lines that touch at endpoints
 https://gis.stackexchange.com/questions/177177/finding-and-merging-lines-that-touch-in-postgis?rq=1
 
 Solution given uses ST_ClusterWithin, which is clever.  Can be improved slightly however (e.g. can use ST_Boundary to get endpoints?).  Would be much nicer if ST_ClusterWithin was a window function.  
@@ -1372,7 +1430,7 @@ Can also use ST_LineMerge to do this very simply (posted).
 Also:
 
 https://gis.stackexchange.com/questions/360795/merge-linestring-that-intersects-without-making-them-multilinestring
-
+```
 WITH data(geom) AS (VALUES
 ( 'LINESTRING (50 50, 150 100, 250 75)'::geometry )
 ,( 'LINESTRING (250 75, 200 0, 130 30, 100 150)'::geometry )
@@ -1380,13 +1438,14 @@ WITH data(geom) AS (VALUES
 )
 SELECT ST_AsText(ST_LineMerge(ST_Collect(geom))) AS line 
 FROM data;
-
-Merging lines that touch at endpoints 2
+```
+### Merge lines that touch at endpoints 2
 https://gis.stackexchange.com/questions/16698/join-intersecting-lines-with-postgis
 
 Solution
 https://gis.stackexchange.com/a/80105/14766
-Merging lines which do not form a single line
+
+### Merge lines which do not form a single line
 https://gis.stackexchange.com/questions/83069/cannot-st-linemerge-a-multilinestring-because-its-not-properly-ordered
 Solution
 Not possible with ST_LineMerge
@@ -1394,12 +1453,13 @@ Error is not obvious from return value though
 
 See Also
 https://gis.stackexchange.com/questions/139227/st-linemerge-doesnt-return-linestring?rq=1
-Extract Line Segments
+
+### Extract Line Segments
 https://gis.stackexchange.com/questions/174472/in-postgis-how-to-split-linestrings-into-their-individual-segments?rq=1
 
 Need an ST_DumpSegments to do this!
 
-Remove Longest Segment from a LineString
+### Remove Longest Segment from a LineString
 https://gis.stackexchange.com/questions/372110/postgis-removing-the-longest-segment-of-a-linestring-and-rejoining-segments
 
 Solution (part)
@@ -1411,7 +1471,7 @@ JOIN LATERAL generate_series to extract the line segments
 array slicing to extract a subline containing a section of the original line
 
 It would be clearer if parts of this SQL were wrapped in functions (e.g. perhaps an ST_LineSlice function, and a ST_DumpSegments function - which perhaps will become part of PostGIS one day).
-
+```
 WITH data(id, geom) AS (VALUES
     ( 1, 'LINESTRING (0 0, 1 1, 2.1 2, 3 3, 4 4)'::geometry )
 ),
@@ -1431,12 +1491,12 @@ SELECT
     (ARRAY( SELECT (ST_DumpPoints(geom)).geom FROM longest))[iLongest + 1: ST_NumPoints(geom)]
   )) ELSE null END AS line2
 FROM longest;
-
-Split Lines into Equal-length portions
+```
+### Split Lines into Equal-length portions
 https://gis.stackexchange.com/questions/97990/break-line-into-100m-segments/334305#334305
 
 Modern solution using LATERAL:
-
+```
 WITH
 data AS (
     SELECT * FROM (VALUES
@@ -1456,40 +1516,40 @@ CROSS JOIN LATERAL (
             floor( d.len / sublen )::integer ) AS t(i)
         WHERE (sublen * i)/len <> 1.0  
     ) AS d2;
-
+```
  Need to update PG doc:  https://postgis.net/docs/ST_LineSubstring.html
 
 See also 
 https://gis.stackexchange.com/questions/346196/split-a-linestring-by-distance-every-x-meters-using-postgis
 
 https://gis.stackexchange.com/questions/338128/postgis-points-along-a-line-arent-actually-falling-on-the-line
-
 This one contains a nice utlity function to segment a line by length, by using ST_LineSubstring.  Possible candidate for inclusion?
 
 https://gis.stackexchange.com/questions/360670/how-to-break-a-linestring-in-n-parts-in-postgis
-Merging Lines That Don’t Touch
+
+### Merge Lines That Don’t Touch
 https://gis.stackexchange.com/questions/332780/merging-lines-that-dont-touch-in-postgis
 
 Solution
 No builtin function to do this, but one can be created in PL/pgSQL.
 
 
-Measuring/4D relation querying within linestring using PostGIS
+### Measure/4D relation querying within linestring using PostGIS
 https://gis.stackexchange.com/questions/340689/measuring-4d-relation-querying-within-linestring-using-postgis
 
 Solution
 Uses DumpPoint and windowing functions
 
-Construct evenly-spaced points along a polygon boundary
+### Construct evenly-spaced points along a polygon boundary
 https://gis.stackexchange.com/questions/360199/get-list-of-equidistant-points-on-polygon-border-postgis
 
-Find Segment of Line Closest to Point to allow Point Insertion
+### Find Segment of Line Closest to Point to allow Point Insertion
 https://gis.stackexchange.com/questions/368479/finding-line-segment-of-point-on-linestring-using-postgis
 
 Currently requires iteration.
 Would be nice if the Linear Referencing functions could return segment index.
 See https://trac.osgeo.org/postgis/ticket/892
-
+```
 CREATE OR REPLACE FUNCTION ST_LineLocateN( line geometry, pt geometry )
 RETURNS integer
 AS $$
@@ -1502,7 +1562,8 @@ AS $$
     ) AS t LIMIT 1;
 $$
 LANGUAGE sql STABLE STRICT;
-Insert LineString Vertices at Closest Point(s)
+```
+### Insert LineString Vertices at Closest Point(s)
 https://gis.stackexchange.com/questions/40622/how-to-add-vertices-to-existing-linestrings
 https://gis.stackexchange.com/questions/370488/find-closest-index-in-line-string-to-insert-new-vertex-using-postgis
 https://gis.stackexchange.com/questions/41162/adding-multiple-points-to-a-linestring-in-postgis
@@ -1512,8 +1573,8 @@ ST_Snap does this nicely
 SELECT ST_AsText( ST_Snap('LINESTRING (0 0, 9 9, 20 20)',
   'MULTIPOINT( (1 1.1), (12 11.9) )', 0.2));
 
-Graphs
-Find Shortest Path through linear network
+## Graphs
+### Find Shortest Path through linear network
 Input Parameters: linear network MultiLineString, start point, end point
 
 Start and End point could be snapped to nearest endpoints if not already in network
@@ -1524,24 +1585,25 @@ Maybe also function to snap a network?
 
 https://gis.stackexchange.com/questions/295199/how-do-i-select-the-longest-connected-lines-from-postgis-st-approximatemedialaxi
 
-Temporal Trajectories
-Finding Coincident Paths
+## Temporal Trajectories
+### Find Coincident Paths
 https://www.cybertec-postgresql.com/en/intersecting-gps-tracks-to-identify-infected-individuals/
 
-Remove Stationary Points
+### Remove Stationary Points
 https://gis.stackexchange.com/questions/290243/remove-points-where-user-was-stationary
-Parse Errors 
-Parse Error Loading OSM Polygons
+
+## Parse Errors 
+### Parse Error Loading OSM Polygons
 https://gis.stackexchange.com/questions/346641/postgis-parse-error-invalid-geometry-after-using-st-multi-but-st-isvalid
 
 Solution
 Problem was incorrect order of columns, so trying to load an integer into a geometry field.
 Better error messages would make this more obvious.
 
-Parse Error from non-WKT format text
+### Parse Error from non-WKT format text
 https://gis.stackexchange.com/questions/311955/error-parse-error-invalid-geometry-postgis?noredirect=1&lq=1
 
-Generating GeoJSON
+## Generating GeoJSON
 https://gis.stackexchange.com/questions/112057/sql-query-to-have-a-complete-geojson-feature-from-postgis
 
 
