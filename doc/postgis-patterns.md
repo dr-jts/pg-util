@@ -1586,24 +1586,28 @@ Maybe also function to snap a network?
 https://gis.stackexchange.com/questions/295199/how-do-i-select-the-longest-connected-lines-from-postgis-st-approximatemedialaxi
 
 ## Temporal Trajectories
+
 ### Find Coincident Paths
 https://www.cybertec-postgresql.com/en/intersecting-gps-tracks-to-identify-infected-individuals/
 
 ### Remove Stationary Points
 https://gis.stackexchange.com/questions/290243/remove-points-where-user-was-stationary
 
-## Parse Errors 
-### Parse Error Loading OSM Polygons
+## Input
+
+### Parse Error loading OSM Polygons
 https://gis.stackexchange.com/questions/346641/postgis-parse-error-invalid-geometry-after-using-st-multi-but-st-isvalid
 
-Solution
-Problem was incorrect order of columns, so trying to load an integer into a geometry field.
+#### Solution
+Problem is incorrect order of columns, so trying to load an integer into a geometry field.
 Better error messages would make this more obvious.
 
 ### Parse Error from non-WKT format text
 https://gis.stackexchange.com/questions/311955/error-parse-error-invalid-geometry-postgis?noredirect=1&lq=1
 
-## Generating GeoJSON
+## Output
+
+### Generate GeoJSON Feature
 https://gis.stackexchange.com/questions/112057/sql-query-to-have-a-complete-geojson-feature-from-postgis
 
 
