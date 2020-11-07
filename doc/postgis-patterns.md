@@ -2,6 +2,9 @@
 
 A collection of interesting PostGIS patterns / solutions / problems.
 
+## Index
+* [Query - Point in Polygon](#query---point-in-polygon)
+* [Query - Lines](#query---lines)
 
 ## Query - Point in Polygon
 ### Find polygon containing points
