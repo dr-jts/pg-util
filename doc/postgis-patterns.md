@@ -42,7 +42,7 @@ https://gis.stackexchange.com/questions/83615/optimizing-st-within-query-to-coun
 ### Find smallest polygon containing point
 https://gis.stackexchange.com/questions/220313/point-within-a-polygon-within-another-polygon
 
-!(https://i.stack.imgur.com/vFDCs.png)
+![](https://i.stack.imgur.com/vFDCs.png)
 
 #### Solution
 Choose containing polygon with smallest area 
