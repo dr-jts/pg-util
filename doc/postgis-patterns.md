@@ -507,7 +507,8 @@ Use the Thinness Ratio:  TR(A,p) = A * 4 * pi / (p^2)
 See https://gis.stackexchange.com/questions/151939/explanation-of-the-thinness-ratio-formula
 
 
-## Query - Invalid Geometries
+## Query - Invalid Geometry
+
 ### Skip invalid geometries when querying
 https://gis.stackexchange.com/questions/238748/compare-only-valid-polygon-geometries-in-postgis?rq=1
 
