@@ -9,19 +9,21 @@ https://gis.stackexchange.com/questions/354319/how-to-extract-attributes-of-poly
 
 Solution
 A simple query to do this is:
-
+```
 SELECT pt.id, poly.*
   FROM grid pt
   JOIN polygons poly ON ST_Intersects(poly.geom, pt.geom);
-One caveat: this will return multiple records if a point lies in multiple polygons. To ensure only a single record is returned per point, and also to include points which do not lie in any polygon, use:
-
+```
+Caveat: this will return multiple records if a point lies in multiple polygons. To ensure only a single record is returned per point, and also to include points which do not lie in any polygon, use:
+```
 SELECT pt.id, poly.*
   FROM grid pt
   LEFT OUTER JOIN LATERAL 
     (SELECT * FROM polygons poly 
        WHERE ST_Intersects(poly.geom, pt.geom) LIMIT 1) AS poly ON true;
+```
 
-Count kinds of Points in Polygons
+### Count kinds of Points in Polygons
 https://gis.stackexchange.com/questions/356976/postgis-count-number-of-points-by-name-within-distinct-polygons
 
 SELECT
@@ -33,12 +35,12 @@ SELECT
 FROM polygons
     LEFT JOIN points ON st_intersects(points.geom, polygons.geom)
 GROUP BY polyname
-Optimizing Point-in-Polygon query
+### Optimizing Point-in-Polygon query
 https://gis.stackexchange.com/questions/83615/optimizing-st-within-query-to-count-lightning-occurrences-inside-country
 
-Find smallest polygon containing point
+### Find smallest polygon containing point
 https://gis.stackexchange.com/questions/220313/point-within-a-polygon-within-another-polygon
-Solution
+#### Solution
 Choose containing polygon with smallest area 
 
 SELECT DISTINCT ON (compequip.id), compequip.*, a.*
@@ -46,7 +48,8 @@ FROM compequip
 LEFT JOIN a
 ON ST_within(compequip.geom, a.geom)
 ORDER BY compequip.id, ST_Area(a.geom)
-Finding points NOT in Polygons
+
+### Finding points NOT in Polygons
 https://gis.stackexchange.com/questions/139880/postgis-st-within-or-st-disjoint-performance-issues?rq=1
 
 Also these:
@@ -58,7 +61,7 @@ This is not PiP, but the solution of using NOT EXISTS might be applicable?
 
 https://gis.stackexchange.com/questions/162651/looking-for-boolean-intersection-of-small-table-with-huge-table
 
-Finding highest point in polygons
+### Finding highest point in polygons
 Given 2 tables:
 
 obstacles (point layer) with a column height_m (INTEGER)
@@ -77,20 +80,20 @@ JOIN LATERAL (SELECT * FROM obstacles o
  ORDER BY height_m LIMIT 1
   ) AS obs_max ON true;
 
-Solution - DISTINCT ON
+#### Solution - DISTINCT ON
 Do a spatial join between polygon and points and start you query with DISTINCT ON (poly.id) poly.id, o.height etc.
 
-Solution - ARRAY_AGG
+#### Solution - ARRAY_AGG
 select p.id, (array_agg(o.id order by height_m))[1] as heighest_id
 from polyobstacles p join obstacles o on st_contains(p.geom, o.geom)
 group by p.id;
 
-Find polygon containing point
+### Find polygon containing point
 Basic query - with tables of address points and US census blocks, find state for each point
 Discusses required indexes, and external parallelization
 https://lists.osgeo.org/pipermail/postgis-users/2020-May/044161.html
 
-Count Points in Polygons with two Point tables
+### Count Points in Polygons with two Point tables
 https://gis.stackexchange.com/questions/377741/find-count-of-multiple-tables-that-st-intersect-a-main-table
 
 SELECT  ply.polyname, SUM(pnt1.cnt) AS pointtable1count, SUM(pnt2.cnt) AS pointtable2count
@@ -106,7 +109,8 @@ FROM    polytable AS ply,
           WHERE  ST_Intersects(ply.geom, pt.geom)
         ) AS pnt2
 GROUP BY 1;
-Query - Lines
+
+## Query - Lines
 Find lines which have a given angle of incidence
 https://gis.stackexchange.com/questions/134244/query-road-shape?noredirect=1&lq=1
 
