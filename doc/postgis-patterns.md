@@ -201,40 +201,21 @@ WHERE NOT EXISTS (SELECT 1 FROM streets WHERE ST_Intersects(polygons.geom, stree
 ## Query - Spatial Relationship
 
 ### Find Polygons not contained by other Polygons
-https://gis.stackexchange.com/questions/185308/find-polygons-that-does-not-contain-any-polygons-with-postgis?rq=1
-Solution
-Uses the LEFT JOIN on ST_Contains with NULL result pattern
+https://gis.stackexchange.com/questions/185308/find-polygons-that-does-not-contain-any-polygons-with-postgis
+#### Solution
+Use the LEFT JOIN on `ST_Contains` with NULL result pattern
 
-### Find Polygons not contained by union of other Polygons
-https://gis.stackexchange.com/questions/313039/find-what-polygons-are-not-fully-covered-by-union-of-polygons-from-another-layer?rq=1
+### Find Polygons NOT covered by union of other Polygons
+https://gis.stackexchange.com/questions/313039/find-what-polygons-are-not-fully-covered-by-union-of-polygons-from-another-layer
 
-### FInd Polygons that are islands
-https://gis.stackexchange.com/questions/291824/determine-if-a-polygon-is-not-enclosed-by-other-polygons
-
-
-### Find polygons not surrounded by other polygons in a coverage
-https://gis.stackexchange.com/questions/291824/determine-if-a-polygon-is-not-enclosed-by-other-polygons
-
-Solution
-Find polygons with total length of intersection with others is less than length of boundary
-
-A couple of others as well.
-```sql
-SELECT a.id
-FROM my_data a 
-INNER JOIN my_data b ON (ST_Intersects(a.geom, b.geom) AND a.id != b.id) 
-GROUP BY a.id
-HAVING 1e-6 > 
-  abs(ST_Length(ST_ExteriorRing(a.geom)) - 
-  sum(ST_Length(ST_Intersection(ST_Exteriorring(a.geom), ST_ExteriorRing(b.geom)))));
-```
 ### Find Polygons covered by a set of other polygons
 https://gis.stackexchange.com/questions/212543/compare-row-to-all-others-in-postgis
 
-Solution
+#### Solution
 For each polygon, compute union of polygons which intersect it, then test if the union covers the polygon
 
-### Find polygons which touch in a line
+
+### Find Polygons which touch in a line
 ```sql
 WITH 
 data(id, geom) AS (VALUES
@@ -247,6 +228,25 @@ SELECT a.id, b.id,
     ST_Relate(a.geom, b.geom, '****1****') AS is_line_touch
     FROM data a CROSS JOIN data b WHERE a.id < b.id;
 ```
+
+### Find Polygons in a Coverage NOT fully enclosed by other Polygons
+https://gis.stackexchange.com/questions/291824/determine-if-a-polygon-is-not-enclosed-by-other-polygons
+
+[](https://i.stack.imgur.com/tp5WK.png)
+
+#### Solution
+Find polygons where total length of intersection with others is less than length of boundary
+
+```sql
+SELECT a.id
+FROM data a 
+INNER JOIN data b ON (ST_Intersects(a.geom, b.geom) AND a.id != b.id) 
+GROUP BY a.id
+HAVING 1e-6 > 
+  abs(ST_Length(ST_ExteriorRing(a.geom)) - 
+  sum(ST_Length(ST_Intersection(ST_Exteriorring(a.geom), ST_ExteriorRing(b.geom)))));
+```
+
 ### Test if Point is on a Line
 https://gis.stackexchange.com/questions/11510/st-closestpointline-point-does-not-intersect-line?rq=1
 
@@ -256,10 +256,8 @@ Also https://gis.stackexchange.com/questions/350461/find-path-containing-point
 https://gis.stackexchange.com/questions/131806/find-start-of-river?rq=1
 https://gis.stackexchange.com/questions/132266/find-headwater-polygons?noredirect=1&lq=1
 
-
 ### Find routes which terminate in Polygons but do not cross them
 https://gis.stackexchange.com/questions/254051/selecting-lines-with-start-and-end-points-inside-polygons-but-do-not-cross-them
-
 
 ### Find Lines that touch Polygon at both ends
 https://gis.stackexchange.com/questions/299319/select-only-lines-that-touch-both-sides-of-polygon-postgis
@@ -342,14 +340,16 @@ GROUP BY bg.geoid, bg.geom, bg.total_pop, bg.med_inc;
 ```
 ### Count points from two tables which lie inside polygons
 https://stackoverflow.com/questions/59989829/count-number-of-points-from-two-datasets-contained-by-neighbourhood-polygons-u
+
 ### Count polygons which lie within two layers of polygons
 https://gis.stackexchange.com/questions/115881/how-many-a-features-that-fall-both-in-the-b-polygons-and-c-polygons-are-for-each
 
-Q is for ArcGIS; would be interesting to provide a PostGIS answer
+***(Question is for ArcGIS; would be interesting to provide a PostGIS answer)***
 
-### Find Median of values in a polygon neighbourhood
+### Find Median of values in a Polygon neighbourhood in a Polygonal Coverage
 https://gis.stackexchange.com/questions/349251/finding-median-of-polygons-that-share-boundaries
-### Compute total length of lines in a Polygon
+
+### Compute total length of Lines in a Polygon
 https://gis.stackexchange.com/questions/143438/calculating-total-line-lengths-within-polygon
 
 
