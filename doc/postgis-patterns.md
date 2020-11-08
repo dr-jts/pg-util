@@ -24,7 +24,7 @@ A collection of interesting PostGIS patterns / solutions / problems.
 * [PostGIS Manual 3.0](https://postgis.net/docs/manual-3.0/index.html)
 
 ## Query - Point in Polygon
-### Find polygon containing points
+### Find Points contained by Polygons with attributes
 https://gis.stackexchange.com/questions/354319/how-to-extract-attributes-of-polygons-at-specific-points-into-new-point-layer-in
 
 #### Solution
@@ -59,7 +59,7 @@ GROUP BY polyname;
 ### Optimizing Point-in-Polygon query
 https://gis.stackexchange.com/questions/83615/optimizing-st-within-query-to-count-lightning-occurrences-inside-country
 
-### Find smallest polygon containing point
+### Find smallest Polygon containing Point
 https://gis.stackexchange.com/questions/220313/point-within-a-polygon-within-another-polygon
 
 ![](https://i.stack.imgur.com/vFDCs.png)
@@ -73,7 +73,7 @@ LEFT JOIN a
 ON ST_within(compequip.geom, a.geom)
 ORDER BY compequip.id, ST_Area(a.geom)
 ```
-### Find points NOT in Polygons
+### Find Points NOT in Polygons
 https://gis.stackexchange.com/questions/139880/postgis-st-within-or-st-disjoint-performance-issues?rq=1
 
 https://gis.stackexchange.com/questions/26156/updating-attribute-values-of-points-outside-area-using-postgis
@@ -84,15 +84,13 @@ This is not PiP, but the solution of using NOT EXISTS might be applicable?
 
 https://gis.stackexchange.com/questions/162651/looking-for-boolean-intersection-of-small-table-with-huge-table
 
-### Find highest point in polygons
+### Find Point in Polygon with greatest attribute
 Given 2 tables:
 
-* `obstacles` (point layer) with a column height_m (INTEGER) 
-  * has obstacles all over the map
-* `polyobstacles` (polygon layer)
-  * has some polygons containing some of the obstacle points.
+* `obstacles` - Point layer with a column `height_m INTEGER` 
+* `polyobstacles` - Polygon layer
 
-Select the highest obstacle in each polygon. If there are several points with the same highest height a random obstacle of those highest shall be selected.
+Select the highest obstacle in each polygon. If there are several points with the same highest height a random one of those is selected.
 
 #### Solution - JOIN LATERAL
 ```sql
@@ -104,15 +102,15 @@ JOIN LATERAL (SELECT * FROM obstacles o
   ) AS obs_max ON true;
 ```
 #### Solution - DISTINCT ON
-Do a spatial join between polygon and points and use `DISTINCT ON (poly.id) poly.id, o.height` etc.
+Do a spatial join between polygon and points and use `SELECT DISTINCT ON (poly.id) poly.id, o.height...`
 
 #### Solution - ARRAY_AGG
 ```sql
-select p.id, (array_agg(o.id order by height_m))[1] as heighest_id
-from polyobstacles p join obstacles o on st_contains(p.geom, o.geom)
-group by p.id;
+SELECT p.id, (array_agg(o.id order by height_m))[1] AS highest_id
+FROM polyobstacles p JOIN obstacles o ON ST_Contains(p.geom, o.geom)
+GROUP BY p.id;
 ```
-### Find polygon containing point
+### Find Polygon containing Point
 Basic query - with tables of address points and US census blocks, find state for each point
 Discusses required indexes, and external parallelization
 https://lists.osgeo.org/pipermail/postgis-users/2020-May/044161.html
@@ -139,7 +137,7 @@ GROUP BY 1;
 
 ## Query - Lines
 
-### Find lines which have a given angle of incidence
+### Find Lines which have a given angle of incidence
 https://gis.stackexchange.com/questions/134244/query-road-shape?noredirect=1&lq=1
 
 ### Find Line Intersections
@@ -148,9 +146,9 @@ https://gis.stackexchange.com/questions/20835/identifying-road-intersections-usi
 ### Find Lines which intersect N Polygons
 https://gis.stackexchange.com/questions/349994/st-intersects-with-multiple-geometries
 
-Solution
-Straightforward and nice application of counting using HAVING clause
-SQL given is not general but should generalize easily
+#### Solution
+Nice application of counting using `HAVING` clause.
+
 ```sql
 SELECT lines.id, lines.geom 
 FROM lines
@@ -159,9 +157,10 @@ WHERE polygons.id in (1,2)
 GROUP BY lines.id, lines.geom 
 HAVING count(*) = 2;
 ```
-### Count number of intersections between line segments
+### Count number of intersections between Line Segments
 https://gis.stackexchange.com/questions/365575/counting-geometry-intersections-between-two-linestrings
-### Find Begin/End of circular sublines
+
+### Find Begin and End of circular sublines
 https://gis.stackexchange.com/questions/206815/seeking-algorithm-to-detect-circling-and-beginning-and-end-of-circle
 
 ### Find Longest Line Segment
@@ -170,13 +169,13 @@ https://gis.stackexchange.com/questions/359825/get-the-maximum-distance-between-
 ### Find non-monotonic Z ordinates in a LineString
 https://gis.stackexchange.com/questions/374459/postgis-validate-the-z-continuity
 
-Assuming the LineStrings are digitized in the correct order (start point is most elevated), running
+Assuming the LineStrings are digitized in the correct order (start point is most elevated),
+this returns all vertices geom, their respective line <id>, and their position in the vertices array of that line, 
+for all vertices with higher Z value as their predecessor.
+  
 ```sql
-SELECT ln_id,
-       vtx_id,
-       geom
-FROM   (
-  SELECT ln.<id> AS ln_id,
+SELECT ln_id, vtx_id, geom
+FROM (SELECT ln.<id> AS ln_id,
          dmp.path[1] AS vtx_id,
          dmp.geom,
          ST_Z(dmp.geom) < LAG(ST_Z(dmp.geom)) OVER(PARTITION BY ln.<id> ORDER BY dmp.path[1]) AS is_valid
@@ -185,7 +184,7 @@ FROM   (
 ) q
 WHERE NOT is_valid;
 ```
-returns all vertices geom, their respective line <id>, and their position in the vertices array of that line, for all vertices with higher Z value as their predecessor.
+
   
 ## Query - Polygons
 ### Find polygons intersecting other table of polygons using ST_Subdivide
