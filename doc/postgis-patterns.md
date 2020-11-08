@@ -351,6 +351,8 @@ Q is for ArcGIS; would be interesting to provide a PostGIS answer
 https://gis.stackexchange.com/questions/349251/finding-median-of-polygons-that-share-boundaries
 ### Compute total length of lines in a Polygon
 https://gis.stackexchange.com/questions/143438/calculating-total-line-lengths-within-polygon
+
+
 ## Use the Index, Luke
 https://gis.stackexchange.com/questions/172266/improve-performance-of-a-postgis-st-dwithin-query?rq=1
 
@@ -368,6 +370,8 @@ https://gis.stackexchange.com/questions/240721/postgis-performance-increase-with
 
 ### Use an Index
 https://gis.stackexchange.com/questions/237709/speeding-up-intersect-query-in-postgis
+
+
 ### Query - Distance
 ### Find points NOT within distance of lines
 https://gis.stackexchange.com/questions/356497/select-points-falling-outside-of-buffer-and-count
@@ -446,9 +450,12 @@ https://gis.stackexchange.com/questions/223154/find-highest-elevation-along-path
 ### Query a single point within a given distance of a road
 https://gis.stackexchange.com/questions/361179/postgres-remove-duplicate-rows-returned-by-st-dwithin-query
 
-## Spatial Predicates
+
+## Query - Spatial Predicates
 ### Test if two 3D geometries are equal
 https://gis.stackexchange.com/questions/373978/how-to-check-two-3d-geometry-are-equal-in-postgis/373980#373980
+
+
 ## Query - KNN
 ### Nearest Point to each point in same table
 https://gis.stackexchange.com/questions/287774/nearest-neighbor
@@ -558,6 +565,11 @@ https://gis.stackexchange.com/questions/238748/compare-only-valid-polygon-geomet
 ## Query - Relate
 ### Find LineStrings with Common Segments
 https://gis.stackexchange.com/questions/268147/find-linestrings-with-common-segments-in-postgis-2-3
+```sql
+SELECT ST_Relate('LINESTRING(0 0, 2 0)'::geometry,
+                 'LINESTRING(1 0, 2 0)'::geometry,
+                 '1********');
+```                 
 
 
 ## Query - Duplicates
