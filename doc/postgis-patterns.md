@@ -17,6 +17,12 @@ A collection of interesting PostGIS patterns / solutions / problems.
 * [Query - Duplicates](#query---duplicates)
 * [Query - JOIN LATERAL](#query---join-lateral)
 
+## References
+
+* [PostGIS on GIS StackExchange](https://gis.stackexchange.com/questions/tagged/postgis?tab=Newest)
+* [PostGIS on StackOverflow](https://stackoverflow.com/questions/tagged/postgis)
+* [PostGIS Manual 3.0](https://postgis.net/docs/manual-3.0/index.html)
+
 ## Query - Point in Polygon
 ### Find polygon containing points
 https://gis.stackexchange.com/questions/354319/how-to-extract-attributes-of-polygons-at-specific-points-into-new-point-layer-in
