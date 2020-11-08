@@ -272,16 +272,53 @@ SELECT lines.geom
  WHERE ST_Touches(lines.geom, polygons.geom) AND
                  NOT EXISTS (SELECT 1 FROM polygons p2 WHERE ST_Crosses(lines.geom, p2.geom));
 ```
-### Determine hierarchy of a spatial coverage
+### Compute hierarchy of a nested Polygonal Coverage
 https://gis.stackexchange.com/questions/343100/intersecting-polygons-to-build-boundary-hierearchy-using-postgis
 
-Have a table of polygons which are known to form a hierarchical coverage, but coverage is not explicitly represented.
-Solution
-Should be straightforward.  Determine containing relationship based on interior points and areas. Then can use a recursive query on that to extract paths if needed. 
+A table of polygons which form a set of nested hierarchical coverages, but coverage hierarchy is not explicitly represented.
+#### Solution
+Determine contains relationships based on interior points and areas. Can use a recursive query on that to extract paths if needed. 
+
+```sql
+WITH RECURSIVE data(id, geom) AS (VALUES
+('AC11', 'POLYGON ((100 200, 150 200, 150 150, 100 150, 100 200))'),
+('AC12', 'POLYGON ((200 200, 200 150, 150 150, 150 200, 200 200))'),
+('AC21', 'POLYGON ((200 100, 150 100, 150 150, 200 150, 200 100))'),
+('AC22', 'POLYGON ((100 100, 100 150, 150 150, 150 100, 100 100))'),
+('AC1', 'POLYGON ((200 200, 200 150, 100 150, 100 200, 200 200))'),
+('AC2', 'POLYGON ((200 100, 100 100, 100 150, 200 150, 200 100))'),
+('AC', 'POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))'),
+('AB1', 'POLYGON ((100 300, 150 300, 150 200, 100 200, 100 300))'),
+('AB2', 'POLYGON ((200 300, 200 200, 150 200, 150 300, 200 300))'),
+('AB', 'POLYGON ((100 300, 200 300, 200 200, 100 200, 100 300))'),
+('AA', 'POLYGON ((0 300, 100 300, 100 100, 0 100, 0 300))'),
+('A', 'POLYGON ((200 100, 0 100, 0 300, 200 300, 200 100))')
+),
+-- compute all containment links
+contains AS ( SELECT p.id idpar, c.id idch, ST_Area(p.geom) par_area
+    FROM data p 
+    JOIN data c ON ST_Contains(p.geom, ST_PointOnSurface(c.geom))
+    WHERE ST_Area(p.geom) > ST_Area(c.geom)
+),
+-- extract direct containment links, by choosing parent with min area
+pcrel AS ( SELECT DISTINCT ON (idch) idpar, idch 
+    FROM contains ORDER BY idch, par_area ASC
+),
+-- compute paths as strings
+pcpath(id, path) AS (
+    SELECT 'A' AS id, 'A' AS path
+    UNION ALL
+    SELECT idch AS id, path || ',' || idch
+        FROM pcpath JOIN pcrel ON pcpath.id = pcrel.idpar
+)
+SELECT * FROM pcpath;
+```
 
 
 ## Query - Spatial Statistics
-### Count points which lie inside polygons
+
+### Count Points contained in Polygons
+
 #### Solution - LATERAL
 Good use case for JOIN LATERAL
 ```sql
